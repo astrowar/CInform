@@ -1,0 +1,17 @@
+    Repeat 3
+        New Instance $0 triangle
+        Relate $0  (Geometry Lab)  inner_relation
+    Repeat 2
+        New Instance $0 square
+        Relate $0  (Geometry Lab)  inner_relation
+
+    PHRASE DECL _comment001
+    PHRASE comment upon ARG1
+        UNIFY ARG1 whatever
+        UNIFY type( whatever ) thing
+            IF whatever IS transparent
+                CALL _say001 "I see right through this!"
+            IF whatever IS_AND door , open
+                CALL  _say001 "Oh look, an open door!"
+                IF whatever IS openable
+                    CALL _say001 "But you could always shut it."

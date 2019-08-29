@@ -1,0 +1,15 @@
+object is an kind
+A object can be portable or fixed in place.
+A object  is usually portable 
+
+
+the book is an object
+the book has a number called number of pages
+
+A distance is a kind of number 
+A distance can be far or near.
+
+A number is a kind of value
+
+brightnesses is a kind of value
+The brightnesses are guttering, weak, radiant and blazing

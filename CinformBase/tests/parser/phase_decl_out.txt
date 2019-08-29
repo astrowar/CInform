@@ -1,0 +1,79 @@
+code:
+BEGIN PHASE2 (concatenate B1)  
+  UNIFY B1 name_of<K>  
+  UNIFY K kind_of_value  
+END PHASE   
+
+BEGIN PHASE3 (A1 to which/whom A2 relates by A3) ((list of Ls))  
+  UNIFY A1 list_of<$k_107>  
+  UNIFY $k_107 name_of<L>  
+  UNIFY L kind_of_value  
+  UNIFY A2 X  
+  UNIFY X K  
+  UNIFY A3 R  
+  UNIFY R relation<set<value<K>>,L>  
+END PHASE   
+
+New Kind thing  
+New Kind Person  
+New Instance taking action<thing> 
+New Kind location  
+New Instance cave location 
+New Kind (open container)  
+BEGIN PHASE2 (slam shut B2)  
+  UNIFY box $k_109  
+  UNIFY $k_109 open_container  
+END PHASE   
+
+BEGIN INSTEAD (taking A1)  
+  UNIFY A1 (the napkin)  
+END INSTEAD   
+
+phaseInsteadwhen ? (entering the throne) (Persephone is on the throne :)  
+BEGIN PHASE3 (A1 to which/whom A2 relates by A3) ((list of Ls))  
+  UNIFY A1 list_of<$k_117>  
+  UNIFY $k_117 name_of<L>  
+  UNIFY L kind_of_value  
+  UNIFY A2 X  
+  UNIFY X K  
+  UNIFY A3 R  
+  UNIFY R relation<set<value<K>>,L>  
+END PHASE   
+
+BEGIN PHASE4 (A1 is inside B2) BOOL 
+  UNIFY X $k_120  
+  UNIFY $k_120 Person  
+  UNIFY L $k_119  
+  UNIFY $k_119 location  
+END PHASE   
+
+BEGIN PHASE4 (A1 is inflamable) BOOL 
+  FORKSTART lb_124 lb_125  
+  LABEL lb_124   
+  UNIFY A1 X  
+  UNIFY X $k_122  
+  UNIFY $k_122 Person  
+  GOTO lb_126   
+  LABEL lb_125   
+  UNIFY A1 $x123  
+  UNIFY $x123 thing  
+  LABEL lb_126   
+  FORKEND    
+END PHASE   
+
+BEGIN PHASE2 (slam shut B2)  
+  UNIFY box $k_128  
+  UNIFY $k_128 open_container  
+END PHASE   
+
+BEGIN PHASE2 (hunt for B1 in B2)  
+  UNIFY B1 needle  
+  UNIFY needle value<K>  
+  UNIFY B2 haystack  
+  UNIFY haystack list<K>  
+END PHASE   
+
+error:
+Req:shut (box - an open container)
+Req:cave cannot be used as Selector
+Req:something which is on the grill

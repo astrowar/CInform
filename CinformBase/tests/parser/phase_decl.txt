@@ -1,0 +1,36 @@
+
+to slam shut (box - an open container)
+
+to concatenate (name of kind of value K) 
+
+to decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
+thing is an kind
+Person is an Kind
+taking is an action applying to one thing
+location is an kind
+cave is an location 
+ 
+open container is a kind 
+to slam shut (box - an open container)
+ 
+ 
+to decide if (X - cave ) is outside 
+ 
+Instead of taking the napkin: 
+  say "nothing"
+
+To taking something which is on the grill  
+    say "'Hey, you'll burn yourself,' says Mom."
+	
+Instead of entering the throne when Persephone is on the throne:
+  say "I doubt very much that [Persephone] would be pleased if you sat on her."
+	
+ 
+	
+To decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
+ 
+to decide if (X - Person ) is inside ( L - location)
+to decide if (X - Person or thing ) is inflamable
+To slam shut (box - an open container)
+To hunt for (needle - value of kind K) in (haystack - list of Ks) 
+ 

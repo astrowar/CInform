@@ -1,0 +1,242 @@
+
+CInform
+
+Kind 
+  eh o tipo do objeto em questao, todo valor é um Kind
+
+Instance
+  uma instancia é uma valor que é passado por referencia
+
+Variable
+   Variaveis sao apenas slots que armazem um tipo de valor.
+
+Values
+   Um valor é algo imutavel ... sao passado por copy e nao por refencia, por exemplo, numeros e textos
+
+   Text 
+   Number
+   Enum
+      Sao um conjunto de valores sem valor intrínseco definido.
+
+Relations
+   Uma relacao relaciona um K com outro K , (K -> K) ( K = K)  (K -> Ks) (Ks -> K) ( Ks = Ks )
+
+Phase
+   Uma phase eh um comando comporto.. um header de uma funcao, que pode ou nao produzir um resultado
+
+Action
+   Uma acao aplicada pelo user ? associado a um Verbo
+
+List 
+  Uma lista eh um tipo Composto ... Dictionary tambem é um tipo composto ?
+
+
+Gramms:
+   Verbs
+   Noums
+   Articles
+   Adjetives   
+
+
+
+
+
+
+
+// Assertations
+
+A object  is a kind.
+    New Kind object
+
+container  is a kind of object.
+   New Kind container object
+
+box is an container
+    New Instance box container 
+
+A distance is a kind of value.
+      New Value distance
+
+Brightness is a kind of value. 
+    Cira um Enum Brightness
+       New Kind Brightness Value
+
+The brightnesses are guttering, weak, radiant and blazing.  /// Cria enumaradores
+    guttering , weak, radiant , blazing  
+       New Value    guttering brightnesses
+       New Value    weak      brightnesses
+       New Value    radiant   brightnesses
+       New Value    blazing   brightnesses
+
+
+The coffin is an openable container in the Undertomb.
+    Definindo diretamente temos :
+        New Instance coffin container
+        Set coffin  _pp122_thing  openable
+        Relate coffin   Undertomb  inner_relation
+    de forma raw pode ser escrito como:
+        Relate ( Set (New Instance coffin container)  _pp122_thing  openable  )   Undertomb  inner_relation
+
+Every openable Kind can be open or closed, usually is closed
+      @init openable Kind
+            New Instance $0 handle
+            Relate $0 $this incorporation relation
+
+Quando uma instancia é iniciada alguns codigos de inicializao sao gerados. esse eh o init
+
+
+
+Either/or properties
+   A thing can be fixed in place or portable.
+      Esse tipo de construcao cria um Enum Anonimo
+          New Kind       _pp356_thing  Value         // nome anonimo inicia com underscore
+          New Value       (fixed in place)  _pp356_thing
+          New Value       (portable)        _pp356_thing
+          Add Property  thing _pp356_thing _pp356_thing //nome e tipo sao iguais para propridades anonimas
+
+    Para definir um default é preciso encontrar a propriedade
+        A thing  is usually portable.
+        Set thing _pp356_thing (portable)  //Set a classe , nao a instancia
+
+    A dead end has some text called the river sound.
+        Add Property  (dead end)   text (river sound)
+
+    The lantern has a brightness called the flame strength.
+         Add Property  (lantern) brightness (flame strength)
+
+    The river sound of a dead end is usually "a faint whispering of running water".
+        Set (dead end) (river sound) "a faint whispering of running water"
+
+   The grand tally is a number that varies.
+        New Variable     (grand tally)  number
+
+    The prevailing wind is a direction variable. The prevailing wind is southwest.
+        New Variable     (prevailing wind)  direction
+        Set  (prevailing wind) southwest
+
+    Temperature is a kind of value. 100C specifies a temperature.
+    A brightness has a temperature
+    The temperature of a brightness is usually 700C.
+
+        New Kind    Temperature  value
+        New Value   100C         Temperature
+        Add Property  brightness Temperature Temperature  //Tipo e nome iguais
+        Set  brightness Temperature 700C   // vai dar erro !
+
+    The accursed one is a man that varies.
+        New Variable     (accursed one)  man
+
+    The accursed one is initially Peter.
+        Set (accursed one)  Peter   // preocisa escrever na sessão initialization
+
+    The Geometry Lab is a room.
+    A shape is a kind of thing.
+    A square is a kind of shape.
+    A triangle is a kind of shape.
+    In the Geometry Lab are three triangles and two squares.
+       New Instance _u6757_triangle triangle   //instancia sem nome
+       New Instance _u6758_triangle triangle
+       New Instance _u6759_triangle triangle
+       New Instance _u204_square square
+       New Instance _u205_square square
+       Relate _u6757_triangle (Geometry Lab)  inner_relation
+       Relate _u6758_triangle (Geometry Lab)  inner_relation
+       Relate _u6759_triangle (Geometry Lab)  inner_relation
+       Relate _u204_square    (Geometry Lab)  inner_relation
+       Relate _u205_square    (Geometry Lab)  inner_relation
+       OU
+       Repeat 3
+            New Instance $0 triangle
+            Relate $0  (Geometry Lab)  inner_relation
+       Repeat 2
+            New Instance $0 square
+            Relate $0  (Geometry Lab)  inner_relation
+
+
+    A handle is a kind of thing
+    A handle is part of every door.
+        New Kind handle thing
+        @init door
+            New Instance $0 handle
+            Relate $0 $this incorporation relation
+
+        A tag @init K serve para informar que tal codigo deve ser incluido no inicializador do tipo K.
+
+    A person (called its fan) likes every colour.
+        @init colour
+            $0 = New Instance ($this fan) person
+            Relate $0 $this like relation
+
+    Every person likes a colour (called his favourite colour).
+        @init person
+            $0 = New Instance ($this Favourite colour) colour
+            Relate $0 $this like relation
+
+
+
+    X is part of every T
+        if X is Kind :
+            New Instance $0 handle
+            Relate $0 $this incorporation relation
+        else:
+            Relate X  $this incorporation relation
+
+
+    The handle is an thing
+    The handle is part of the white door.
+        New Instance handle thing
+        Relate handle (white door) incorporation relation
+
+
+
+///Phrases
+  Phrases sao headers de funcoes internas. basicamento o nucleo do cinform
+
+  To decide whether (val - K) matches (desc - description of values of kind K):
+  To decide whether (X - K) relates to (name of kind of value L) by (R - relation of values of kind K to Ls) :
+
+  to decide if X is (name of kind of value K): ....
+     UNIFY ARG1  X
+     UNIFY ARG2  (name of kind of value K)
+     o sistema de match procura  por um tipo K tal que  (name of kind of value K) == ARG2
+
+  To decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
+    PHRASE   list of ARG1 to which/whom ARG2 relates by ARG3
+      UNIFY  ARG1 (name of kind of value L)
+      UNIFY  ARG2 X
+      UNIFY  ARG3 R
+      UNIFY  type( X ) K
+      UNIFY  type( R  ) (relation of values of kind K to Ls)
+      UNIFY  type( Ls ) (set of L)   //sempre que for um maisculo seguido de um s minusculo ... eh um Set do tipo
+
+
+
+
+CODE
+
+    O seginte codigo pode ser reescrito como :
+        To comment upon (whatever - a thing):
+            if whatever is transparent, say "I see right through this!";
+            if whatever is an open door:
+                say "Oh look, an open door!";
+                if whatever is openable, say "But you could always shut it."
+
+        PHRASE DECL _comment001
+            PHRASE comment upon ARG1
+                UNIFY ARG1 whatever
+                UNIFY type( whatever ) thing
+                    IF whatever IS transparent
+                        CALL _say001 "I see right through this!"
+                    IF whatever IS_AND door , open
+                        CALL  _say001 "Oh look, an open door!"
+                        IF whatever IS openable
+                            CALL _say001 "But you could always shut it."
+
+Sao duas construcoes distintas e simetricas. PHRASE DECL e CALL
+Mesmo com idendificacao tipada , fica bem dificil identificar quem chama quem durante a compilacao.
+O call precisa passar os argumentos para que o interpeter faça o unify rm RunTime.
+Porem identificar qual phase , eh tarefa do parserTopLevel.
+
+
+
+Comando de query servem para ver os dados do interpreter

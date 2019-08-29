@@ -1,0 +1,7 @@
+NEW KIND object Kind
+NEW INSTANCE box object
+
+New Kind Brightness Value
+New Value    guttering Brightness
+New Value    weak      Brightness
+

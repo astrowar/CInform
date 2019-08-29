@@ -1,0 +1,43 @@
+Os codigos sao compilados para uma lingagem intermediaria, mais simples de se processar pelo interpretador.
+Esse codigo intermediario é o arquivo a ser distribuido.
+
+Ele consiste de opcodes fixos
+New Kind %k %subk
+New Value %name
+New Instance %name %k
+New Variable %name %k
+Add Property %object %propname %kind
+Set %object %propname %value
+Relate %x %y %relation
+
+
+Variaveis:
+  $0, $1, $2 ....  sao variaveis temporarias, criadas pelo interpretador
+  ARG1, ARG2,ARG3... sao os argumentos das phases
+
+PHRASE %matchlist
+UNIFY %x %y
+  o comando de unificaçao eh muito controverso, ele faz um match das valriaveis mudas
+
+
+Repeat %n
+IF %x THEN %y
+IF %x THEN %y ELSE %z 
+
+ha valores que retornam valores
+type(X) : obtem o tipo do valor X
+(name of kind of value K) : obtem o nome literal de determinado tipo K
+(description of values of kind K) : nao sei o que eh ...
+
+
+Sections
+  eh possivel inserir codigo dentro de secoes especificas do codigo
+  
+@init K
+   inseri o codigo na sessao de inicializacao do tipo K
+   
+@init Chapter/Scene 
+   inseri o codigo no inicio de cada sessao , capitulo ou da narrativa geral
+   
+   
+   

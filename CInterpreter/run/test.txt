@@ -1,0 +1,12 @@
+#aqui deveria comecar o programa 
+
+label start 
+  new variable  x  number
+  Set x 0
+  write x
+  write "aqui nao tem (tinha) agua"
+  New Variable    (noise sound)  text
+  Set (noise sound)  "um chiado baixo"
+  write (noise sound)
+
+quit

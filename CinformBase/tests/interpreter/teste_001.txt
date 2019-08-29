@@ -1,0 +1,14 @@
+//Teste do interpretador intermediario
+
+Test
+Add New Kind   Foo
+Add New Instance x Foo
+Assert Is x Foo
+
+Test
+Push Stack
+Add new Kind Foo
+Add new Instance x Foo
+Assert Is (Property "name"  x) "unamed"
+
+
