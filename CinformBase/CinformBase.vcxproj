@@ -179,6 +179,7 @@
   <ItemGroup>
     <ClCompile Include="..\include\emiteCode.cpp" />
     <ClCompile Include="..\include\generate_code_impl.cpp" />
+    <ClCompile Include="..\include\headerPhase.cpp" />
     <ClCompile Include="..\include\hsymbol.cpp" />
     <ClCompile Include="..\include\phaseDef.cpp" />
     <ClCompile Include="..\src\CodeGeneratorEntry.cpp" />

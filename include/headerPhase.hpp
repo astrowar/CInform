@@ -31,6 +31,7 @@ namespace CInform
 			string header;
 			list<SelectorItem* > args;
 
+			bool empty() { return header.empty(); };
 		};
 
 		class HeaderPhaseEntrySelector

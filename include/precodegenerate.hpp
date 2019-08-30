@@ -19,7 +19,7 @@ namespace CInform
 
 		
  
- 
+		class   ParserEntryGroup;
 
 
 		 
@@ -49,6 +49,8 @@ namespace CInform
 		public:
 			ParserStore(GrammarContext *gtx);
 			GrammarContext * grammar();
+
+			ParserEntryGroup*  parserentries;
 
 			void push_state();
 			std::string next_temp();

@@ -1,13 +1,17 @@
+location is an kind
+ 
+Person is an Kind
+to decide if (X - Person ) is inside ( L - location)
+
 
 to slam shut (box - an open container)
-
 to concatenate (name of kind of value K) 
 
 to decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
 thing is an kind
-Person is an Kind
+ 
 taking is an action applying to one thing
-location is an kind
+ 
 cave is an location 
  
 open container is a kind 
