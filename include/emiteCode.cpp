@@ -18,7 +18,7 @@ namespace CInform
 
 			list<ParserEntry > parserentries_list;
 			parserentries_list.emplace_back( "phaseDeclVerb", getPMatchExpended( " to X", gtx ) );
-			parserentries_list.emplace_back( "phaseDeclVerb2", getPMatchExpended( " to X Y  ", gtx ) );
+			//parserentries_list.emplace_back( "phaseDeclVerb2", getPMatchExpended( " to X Y  ", gtx ) );
 
 			if (true)
 			{
@@ -30,7 +30,7 @@ namespace CInform
 
 
 				parserentries_list.emplace_back( "phaseDeclDecide", getPMatchExpended( " to decide if X is Y ", gtx ) );
-				parserentries_list.emplace_back( "phaseDeclwhich", getPMatchExpended( " to decide which X is Y ", gtx ) );
+				parserentries_list.emplace_back( "phaseDeclwhich", getPMatchExpended( " to decide which/what X is Y ", gtx ) );
 				//parserentries_list.emplace_back( "phaseDeclVerb", getPMatchExpended( " to X which  Y ", gtx ) );
 		 
 
@@ -64,20 +64,26 @@ namespace CInform
 			return asm_out;
 		}
 	
+
+		bool testsForSelector( ParserStore *pstore );
+		 
+
+
 		std::list<std::string> emiteInter(   SParagraph* code )
 		{
 			auto gtx = new GrammarContextEnglish();
 			ParserStore *pstore = new ParserStore( gtx );
 
 			//fill pstore
-			 
+			
 			pstore->add( new CInform::Kind( "kind", "", "kind" ));
 			pstore->add( new CInform::Kind( "value", "kind", "value" ) );
 			pstore->add( new CInform::Kind( "number", "value", "number" ) );
 			pstore->add( new CInform::Kind( "action", "kind", "action" ) );
+			pstore->add( new CInform::Kind( "text", "kind", "text" ) );
 			
 
-
+			testsForSelector( pstore );
 			return emiteInter( pstore , code );
 		}
 	}

@@ -1,19 +1,32 @@
+ 
+thing is a kind
+abajour is an thing
+
+
+to carry the abajour from (M - text) to (N - text) 
+
+exit
+to set the background color for (style - text ) to (N - text) 
+to decide what number is the fibonacci index of ( index - number) 
 
  
+open container is a kind 
+to slam shut (box - an open container)
+ 
+
 To decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
-exit
+
 To hunt for (needle - value of kind K) in (haystack - list of Ks) 
  
-to concatenate (name of kind of value K) 
- 
-
-thing is an kind
-Person is an Kind
+to concatenate (name of kind of value K)  
+thing is a kind
+Person is a Kind
 taking is an action applying to one thing
 location is an kind
 cave is an location 
  
 open container is a kind 
+to decide if (x - thing) is on ( Y - thing) 
 
 To hunt for (needle - value of kind K) in (haystack - list of Ks) 
  
@@ -44,3 +57,5 @@ to concatenate (name of kind of value K)
 to decide which (list of Ls) is list of (name of kind of value L) to which/whom (X - K) relates by (R - relation of values of kind K to Ls)
 
 to slam shut (box - an open container)
+
+To decide what number is the fibonacci index of (the index - number)  

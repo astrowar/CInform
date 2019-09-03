@@ -1,6 +1,7 @@
 
 #include "PreCodeGenerate.hpp"
 #include <Grammar.hpp>
+#include <iostream>
 
 using namespace std;
 
@@ -191,6 +192,13 @@ namespace CInform
 
 		}
 
+		bool ParserStore::isPronoum( std::string x )
+		{
+			return  _grammar->isPronoum( x );
+
+		}
+
+
 		bool ParserStore::isVerb( std::string x )
 		{
 			if (isPreposition( x )) return false;
@@ -253,7 +261,7 @@ namespace CInform
 			//if (isSameNoum( name, "is" )) return "is";
 			for (auto &e : symbol_stack)
 			{
-				for (auto &v :  e.symbols)
+				for (auto &v :  e.ListSymbols())
 				{
 					if (auto  vb = dynamic_cast<Verb*>(v))
 					{
@@ -287,7 +295,7 @@ namespace CInform
 			auto ref = "verb:" + this->mangleg( name );
 
 			CInform::Verb  *vv = new CInform::Verb( ref,  name );
-			symbol_stack.front().symbols.push_back(  vv );
+			symbol_stack.front().addSymbol(  vv );
 			return true;
 		}
 
@@ -309,7 +317,8 @@ namespace CInform
 			auto ref =   this->mangleg( name );
 
 			CInform::Kind *kn = new CInform::Kind( ref, k, name );
-			symbol_stack.front().symbols.push_back( kn);
+
+			symbol_stack.front().addSymbol( kn);
 			return true;
 		}
 
@@ -321,13 +330,13 @@ namespace CInform
 				throw "missing kind definition";
 			}
 			CInform::Instance *inst = new CInform::Instance( "i"+this->mangleg( name ), k, name );
-			symbol_stack.front().symbols.push_back( inst);			
+			symbol_stack.front().addSymbol( inst);
 			return true;
 		}
 
 		bool ParserStore::add( Symbol * s )
 		{
-			this->symbol_stack.front().symbols.push_back(s);
+			this->symbol_stack.front().addSymbol(s);
 			return true;
 			
 		}
@@ -437,6 +446,17 @@ namespace CInform
 		}
 
 
+
+		void ParserStoreSymbolList::addSymbol( Symbol * s )
+		{
+			cout << "add Symbol " << s->getName() << endl;
+			symbols.push_back( s );
+		}
+
+		std::list<Symbol*> ParserStoreSymbolList::ListSymbols()
+		{
+			return this->symbols;
+		}
 
 		bool ParserStoreSymbolList::isSymbol(string name)
 		{

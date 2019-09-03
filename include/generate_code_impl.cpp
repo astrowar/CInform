@@ -13,6 +13,64 @@ namespace CInform
 	namespace CodeParser
 	{
 
+		PreCodeGenerate*  create_kind( ParserStore *pstore, PreCodeGenerate* prev_generate, string newKindName  )
+		{			 
+			PreCodeGenerate* error = nullptr;
+			string hasKindnamed = get_kind_reference( pstore, newKindName, &error );
+			if (hasKindnamed != "")return new PreCodeGenerateError( "E:Symbolo ja existe" );
+			//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe");
+			pstore->addKind( newKindName, "kind" );
+			return  new  PreCodeGenerateIL( "New", "Kind", newKindName );
+		}
+
+
+
+		PreCodeGenerate*  create_kind_of( ParserStore *pstore, PreCodeGenerate* prev_generate, string insName,string kindname )
+		{
+			PreCodeGenerate* error = nullptr;
+			string kind = get_kind_reference( pstore, kindname, &error );
+			if (error != nullptr) return error;
+			PreCodeGenerate* article_code = nullptr;
+			if (insName.find( ' ' ) != string::npos)
+			{
+				auto gs = codeGenerateArticle( pstore, prev_generate, insName );
+				insName = gs.entryName;
+				article_code = gs.IL;
+			}
+			pstore->addKind( insName, kind );
+			return (new   PreCodeGenerateIL( "New", "Kind", insName, kind ))->add( article_code );
+		}
+
+		PreCodeGenerate*  create_instance( ParserStore *pstore, PreCodeGenerate* prev_generate, string insName,string kind )
+		{
+
+			if(isSameNoum( kind,"kind")) return create_kind(pstore, prev_generate, insName);
+
+			PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
+				PreCodeGenerate* error = nullptr;
+				string kind_reference = get_kind_reference( pstore, kind, &error );
+				if (error != nullptr) return error; 
+				//if (pstore->isSymbol(kind) == false ) return  new   PreCodeGenerateDependency(kind);
+				PreCodeGenerate* article_code = nullptr;
+				if (insName.find(' ') != string::npos)
+				{
+					auto gs = codeGenerateArticle( pstore, prev_generate, insName );
+					insName = gs.entryName;
+					article_code = gs.IL;
+				}
+				auto ins_ref = pstore->getReference( insName );
+				if (ins_ref != "")
+				{
+					cout << "ja existe" << endl;
+					return  new PreCodeGenerateError( "E:Symbolo ja existe" );;
+				}
+
+				pstore->addInstance( insName, kind_reference );
+				return  prev_generate_local->add( (new  PreCodeGenerateIL( "New", "Instance", insName, kind_reference ))->add( article_code ) );
+
+		}
+
+
 		PreCodeGenerate*  codeGenerate( ParserStore *pstore, PreCodeGenerate* prev_generate, string entryName, TBlockGroupItemNoum vx, TBlockGroupItemNoum vy, TBlockGroupItemNoum vz )
 		{
 			PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
@@ -21,36 +79,14 @@ namespace CInform
 			if (entryName == "assertKind")
 			{
 				string newKindName = (vx.repr());
-				PreCodeGenerate* error = nullptr;
-				string hasKindnamed = get_kind_reference( pstore, newKindName, &error );
-				if (hasKindnamed != "")return new PreCodeGenerateError( "E:Symbolo ja existe" );
-
-
-				//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe");
-				pstore->addKind( newKindName, "kind" );
-				return  new  PreCodeGenerateIL( "New", "Kind", (vx.repr()) );
+				return create_kind( pstore, prev_generate, newKindName );
 			}
 
 			if (entryName == "assertKindOf")
 			{
 				string insName = (vx.repr());
 				string kindname = (vy.repr());
-				//if (pstore->isSymbol(kind) == false)return  new   PreCodeGenerateDependency(kind);	
-				PreCodeGenerate* error = nullptr;
-				string kind = get_kind_reference( pstore, kindname, &error );
-				if (error != nullptr) return error;
-
-
-				PreCodeGenerate* article_code = nullptr;
-				if (vx.size() > 1)
-				{
-					auto gs = codeGenerateArticle( pstore, prev_generate, vx );
-					insName = gs.entryName;
-					article_code = gs.IL;
-				}
-
-				pstore->addKind( insName, kind );
-				return prev_generate_local->add( (new  PreCodeGenerateIL( "New", "Kind", insName, kind ))->add( article_code ) );
+				return create_kind_of( pstore, prev_generate, insName, kindname ); 
 			}
 
 
@@ -58,24 +94,8 @@ namespace CInform
 			{
 				string insName = (vx.repr());
 				string kind = (vy.repr());
-
-				PreCodeGenerate* error = nullptr;
-				string kind_reference = get_kind_reference( pstore, kind, &error );
-				if (error != nullptr) return error;
-
-
-
-				//if (pstore->isSymbol(kind) == false ) return  new   PreCodeGenerateDependency(kind);
-				PreCodeGenerate* article_code = nullptr;
-				if (vx.size() > 1)
-				{
-					auto gs = codeGenerateArticle( pstore, prev_generate, vx );
-					insName = gs.entryName;
-					article_code = gs.IL;
-				}
-				pstore->addInstance( insName, kind_reference );
-				return  prev_generate_local->add( (new  PreCodeGenerateIL( "New", "Instance", insName, kind_reference ))->add( article_code ) );
-
+				return create_instance( pstore, prev_generate, insName, kind );
+			 
 			}
 
 
@@ -323,7 +343,7 @@ namespace CInform
 			if (entryName == "phaseDeclVerb")
 			{
 				PreCodeGenerate* error = nullptr;
-				HeaderPhaseEntry aX = listToVerbEntry( pstore, vx.literals, "A", &error );
+				HeaderPhaseEntry aX = listToComposePreposition_2( pstore, vx.literals, "A"  );
 				if (aX.header.empty())
 				{
 					if (error) return error;

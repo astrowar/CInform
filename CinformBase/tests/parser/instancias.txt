@@ -1,3 +1,5 @@
+A distance is a kind of number 
+ 
 object is an kind
 A object can be portable or fixed in place.
 A object  is usually portable 

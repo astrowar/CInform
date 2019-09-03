@@ -17,6 +17,7 @@ namespace CInform
 		virtual bool  isReservedWord(string x) = 0;
 		virtual bool  isPreposition( string x ) = 0;
 		virtual bool  isNoumReserved( string x ) = 0;
+		virtual bool isPronoum( std::string x ) =0;
 	 
 	};
 
@@ -30,6 +31,7 @@ namespace CInform
 		// Herdado por meio de GrammarContext
 		virtual bool isPreposition( string x ) override;
 		virtual bool  isNoumReserved( string x )  override;
+		virtual bool isPronoum( std::string x ) override;
 
 	};
 
@@ -43,6 +45,7 @@ namespace CInform
 		// Herdado por meio de GrammarContext
 		virtual bool isPreposition( string x ) override;
 		virtual bool  isNoumReserved( string x )  override;
+		virtual bool isPronoum( std::string x ) override;
 
 	};
 }

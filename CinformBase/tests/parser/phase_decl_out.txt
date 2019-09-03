@@ -1,8 +1,13 @@
 code:
-BEGIN PHASE3 (list of (name of kind of value L) to which/whom A1 relates by A2) ((list of Ls))  
-  UNIFY A1 X  
-  UNIFY X K  
-  UNIFY A2 R  
-  UNIFY R relation<set<value<K>>,L>  
+New Kind thing  
+New Instance abajour thing 
+BEGIN PHASE1 (carry A11 from A211 to A221 )  
+  UNIFY A11 iabajour  
+  UNIFY A211 M  
+  UNIFY M $k_104  
+  UNIFY $k_104 text  
+  UNIFY A221 N  
+  UNIFY N $k_105  
+  UNIFY $k_105 text  
 END PHASE   
 

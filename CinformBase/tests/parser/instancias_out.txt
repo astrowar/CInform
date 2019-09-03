@@ -6,20 +6,22 @@ Set this blazing
 @init object:
 Set this portable  
 code:
+New Kind distance number 
+Set Article distance A 
 New Kind object  
-New Kind _pp100_object Value 
-New Value portable _pp100_object 
-New Value (fixed in place) _pp100_object 
-Add Property object _pp100_object _pp100_object
+New Kind _pp104_object Value 
+New Value portable _pp104_object 
+New Value (fixed in place) _pp104_object 
+Add Property object _pp104_object _pp104_object
 New Instance book object 
 Set Article book the 
 Add Property book (number of pages)  number
 New Kind distance number 
 Set Article distance A 
-New Kind _pp101_distance Value 
-New Value far _pp101_distance 
-New Value near _pp101_distance 
-Add Property distance _pp101_distance _pp101_distance
+New Kind _pp105_distance Value 
+New Value far _pp105_distance 
+New Value near _pp105_distance 
+Add Property distance _pp105_distance _pp105_distance
 New Kind number Value 
 Set Article number A 
 New Kind brightnesses Value 

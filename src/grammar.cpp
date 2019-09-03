@@ -23,6 +23,11 @@ namespace CInform
 		return false;
 	}
 
+	bool GrammarContextCode::isPronoum( std::string x )
+	{
+		return false;
+	}
+
 
 		bool GrammarContextEnglish::isReservedWord( string x )
 	{
@@ -39,6 +44,9 @@ namespace CInform
                                           "upon", "concerning", "to", "in", "for", "on", "by", "about", "like", "through", "over", "before", "between", "after", "since", "without", 
                                            "under", "within", "along", "following", "across", "behind", "beyond", "plus", "except", "but", "up", "out", "around", "down", "off", "above", "near" };
 
+			
+			if (x.find( "/" ) != string::npos) return true;
+
 			std::transform( x.begin(), x.end(), x.begin(), []( unsigned char c ) { return std::tolower( c ); } );
 			return (std::find( pp.begin(), pp.end(), x ) != pp.end());
 		
@@ -46,9 +54,14 @@ namespace CInform
 
 		bool GrammarContextEnglish::isNoumReserved( string x )
 		{
-			static std::list<string> reserved = { "name","list","kind","value" };
+			static std::list<string> reserved = { "name","list","kind","value" ,"set","set" };
 			std::transform( x.begin(), x.end(), x.begin(), []( unsigned char c ) { return std::tolower( c ); } );
 			return (std::find( reserved.begin(), reserved.end(), x ) != reserved.end());
+		}
+
+		bool GrammarContextEnglish::isPronoum( std::string x )
+		{
+			return false;
 		}
 
 }

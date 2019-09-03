@@ -26,8 +26,10 @@ namespace CInform
 
 		class ParserStoreSymbolList
 		{
+			std::list<Symbol*> symbols;
 		public:
-			std::list<Symbol*> symbols; 
+			void addSymbol(Symbol* s); 
+			std::list<Symbol*> ListSymbols();
 
 			bool isSymbol(std::string name);
 			bool isValue(std::string name);
@@ -80,6 +82,8 @@ namespace CInform
 			bool isNoumReserved( std::string x );
 			bool isPreposition( std::string x);
 			bool isVerb( std::string x );
+			bool isPronoum( std::string x );
+			 
 		};
 
 		class PreCodeGenerate
@@ -176,6 +180,7 @@ namespace CInform
 		list<string> get_list_and( ParserStore *pstore, string slist );
 
 		GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, Match::TBlockGroupItemNoum vx );
+		GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, string compound );
 		PreCodeGenerate* codeGenerate(ParserStore *pstore, PreCodeGenerate* prev_generate, std::string entryName, Match::TBlockGroupItemNoum vx, Match::TBlockGroupItemNoum vy, Match::TBlockGroupItemNoum vz);
 	}
 }

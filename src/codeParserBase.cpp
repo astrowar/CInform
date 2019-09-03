@@ -41,6 +41,7 @@ namespace CInform
 			{
 				for (auto& mm : mList)
 				{
+					if (lastError ==nullptr) lastError = new PreCodeGenerateError( "Syntax Error" );
 					//cout << mm.repr();
 					//cout << endl;
 					//cout << "M:" << parserentry.entryName << " -> ";
@@ -89,7 +90,7 @@ namespace CInform
 
 				PreCodeGenerate* codeGen = processSourcePreCodeGenerateTerm(pstore, prev_generate, ematch, hs, kv);
 							   
-
+				 
 				if (codeGen == nullptr)  continue;
 
 				if (codeGen->isError())

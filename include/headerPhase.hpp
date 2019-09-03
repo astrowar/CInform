@@ -28,6 +28,8 @@ namespace CInform
 		class HeaderPhaseEntry
 		{
 		public:
+			HeaderPhaseEntry(  )  {}
+			HeaderPhaseEntry(string _header ):header( _header){}
 			string header;
 			list<SelectorItem* > args;
 			bool empty() { return header.empty() && args.empty(); }
