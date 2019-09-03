@@ -304,17 +304,17 @@ namespace CInform
 		{
 			if (this->result == false) return this;
 			if (other.result == false) return other;
-			MatchResult r = MatchResult( true ); 
-			r.bind.insert( this->bind.begin(), this->bind.end() );
-			r.bind .insert( other.bind.begin(), other.bind.end() );
-			//for (auto kv : this->bind)
-			//{
-			//	n[kv.first] = kv.second;
-			//}
-			//for (auto kv : other.bind)
-			//{
-			//	n[kv.first] = kv.second;
-			//} 
+			map<string, TBlockGroupItemNoum> n;
+			for (auto kv : this->bind)
+			{
+				n[kv.first] = kv.second;
+			}
+			for (auto kv : other.bind)
+			{
+				n[kv.first] = kv.second;
+			}
+			MatchResult r = MatchResult( true );
+			r.bind = n;
 			return r;
 		}
 

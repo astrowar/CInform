@@ -23,10 +23,7 @@ namespace CInform
 				string newKindName = (vx.repr());
 				PreCodeGenerate* error = nullptr;
 				string hasKindnamed = get_kind_reference( pstore, newKindName, &error );
-				if (hasKindnamed != "")
-				{
-					return new PreCodeGenerateError( "E:  "+newKindName +" already exist" );
-				}
+				if (hasKindnamed != "")return new PreCodeGenerateError( "E:Symbolo ja existe" );
 
 
 				//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe");
@@ -65,7 +62,7 @@ namespace CInform
 				PreCodeGenerate* error = nullptr;
 				string kind_reference = get_kind_reference( pstore, kind, &error );
 				if (error != nullptr) return error;
-				if (kind_reference == "kind")  return nullptr;
+
 
 
 				//if (pstore->isSymbol(kind) == false ) return  new   PreCodeGenerateDependency(kind);
@@ -156,13 +153,8 @@ namespace CInform
 
 			if (entryName == "assertAdjetive")
 			{
-				PreCodeGenerate* error = nullptr;
-
 				string symbol = (vx.repr());
 				string value = (vy.repr());
-				
-				 
-
 				if (vx.size() > 1) symbol = removeArticle( pstore, symbol );
 
 				if (pstore->isInstance( symbol ))
@@ -175,15 +167,12 @@ namespace CInform
 					return prev_generate_local;
 				}
 
-				{
-
-					auto kindref = get_kind_reference( pstore, value, &error );
-					if (kindref != "") return nullptr;
-				}
-
 				if (pstore->isKind( symbol ))
 				{
-					PreCodeGenerateSession *psess = new   PreCodeGenerateSession( "@init " + symbol ); 
+					PreCodeGenerateSession *psess = new   PreCodeGenerateSession( "@init " + symbol );
+
+
+
 					//fazendo um assert em um tipo
 					for (auto o : get_list_and( pstore, value ))
 					{
@@ -239,7 +228,7 @@ namespace CInform
 			if (entryName == "phaseDeclDecide")
 			{
 				PreCodeGenerate* error = nullptr;
-				HeaderPhaseEntry aY = listToVerbPredicate( pstore, vy.literals, "B", &error );
+				HeaderPhaseEntry aY = listToVerbPreposition( pstore, vy.literals, "B", &error );
 				if (aY.header.empty())
 				{
 					aY = listToArgumentsEntryPatthen_variableSelector( pstore, vy.literals, "B", &error );
@@ -274,9 +263,8 @@ namespace CInform
 
 			if (entryName == "phaseDeclwhich")
 			{
-				PreCodeGenerate* error = nullptr;
 				string aX = (vx.repr());
-				HeaderPhaseEntry aY = listToComposePredicate_2( pstore, vy.literals, "A" ,&error );
+				HeaderPhaseEntry aY = listToComposePreposition_2( pstore, vy.literals, "A" );
 				if (aY.header.empty()) return nullptr;
 				PreCodeGenerateBlock *pblock = new   PreCodeGenerateBlock( new   PreCodeGenerateIL( "BEGIN", "PHASE3", aY.header , aX ) );
 
@@ -295,7 +283,7 @@ namespace CInform
 			if (entryName == "phaseDeclVerb2")
 			{
 				PreCodeGenerate* error = nullptr;
-				HeaderPhaseEntry aY = listToVerbPredicate( pstore, vy.literals, "B", &error ); //NP obriatoriamente
+				HeaderPhaseEntry aY = listToNP( pstore, vy.literals, "B", &error ); //NP obriatoriamente
 				if (aY.header.empty())
 				{
 					return  error; //next
@@ -305,6 +293,8 @@ namespace CInform
 				HeaderPhaseEntry aX = listToVerbEntry( pstore, vx.literals, "A", &error );
 				if (aX.header.empty())
 				{
+					aX = listToVerbOnly( pstore, vx.literals, "A", &error );
+					if (aX.empty())
 					return    error; //next
 				}
 				error = nullptr;
@@ -333,7 +323,7 @@ namespace CInform
 			if (entryName == "phaseDeclVerb")
 			{
 				PreCodeGenerate* error = nullptr;
-				HeaderPhaseEntry aX = listToVerbPredicate( pstore, vx.literals, "A", &error );
+				HeaderPhaseEntry aX = listToVerbEntry( pstore, vx.literals, "A", &error );
 				if (aX.header.empty())
 				{
 					if (error) return error;

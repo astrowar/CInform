@@ -15,7 +15,9 @@ namespace CInform
 	{
 	public:
 		virtual bool  isReservedWord(string x) = 0;
-		 
+		virtual bool  isPreposition( string x ) = 0;
+		virtual bool  isNoumReserved( string x ) = 0;
+	 
 	};
 
 
@@ -24,6 +26,11 @@ namespace CInform
 	public:
 		virtual	bool  isReservedWord(string x);
 	   
+
+		// Herdado por meio de GrammarContext
+		virtual bool isPreposition( string x ) override;
+		virtual bool  isNoumReserved( string x )  override;
+
 	};
 
 
@@ -31,6 +38,11 @@ namespace CInform
 	{
 	public:
 		virtual	bool  isReservedWord( string x );
+
+
+		// Herdado por meio de GrammarContext
+		virtual bool isPreposition( string x ) override;
+		virtual bool  isNoumReserved( string x )  override;
 
 	};
 }

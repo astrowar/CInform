@@ -53,6 +53,7 @@ namespace CInform
 
 
 		std::list<MatchBlockResult>  MatchLine(HSourceBlock line, HMatchExpended  m);
+	std::string ListSrcRepr( std::list<HSourceBlock> val );
 
 	}
 }

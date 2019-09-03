@@ -56,12 +56,17 @@ namespace CInform
 		string get_kind_reference( ParserStore *pstore, string kindname, PreCodeGenerate** error )
 		{
 
+			
+
 			kindname = removeArticle( pstore, kindname );
 
 			if (kindname.find( ' ' ) == string::npos)
 			{
 				if (pstore->isImplicityVar( kindname )) return pstore->mangleg( kindname );
 			}
+
+			if (kindname.find( '-' ) != string::npos) return "";
+
 			if (pstore->isKind( kindname ))
 			{
 				return pstore->getReference( kindname );

@@ -95,7 +95,7 @@ namespace CInform
 				if (codeGen->isError())
 				{
 					lastError = codeGen;
-					return codeGen; //requer uma saida nesse ponto
+					continue;
 				}
 				else
 				{
@@ -109,12 +109,6 @@ namespace CInform
 				//nada foi criado ... retorna o ultimo erro entao
 				return lastError;
 			}
-
-			if (this_generate == nullptr)
-			{
-				return lastError;
-			}
-
 			return this_generate;
 
 		 
@@ -203,16 +197,12 @@ namespace CInform
 
 		}
 
-		map<string, list<PreCodeGenerate*> > processSource( ParserStore *pstore, SParagraph* code  )
+		map<string, list<PreCodeGenerate*> > processSource( ParserStore *pstore, SParagraph* code, ParserEntryGroup* parserentries )
 		{
 
 			map<string ,list<PreCodeGenerate*> > sessions;
 
-			ParserEntryGroup* parserentries = pstore->parserentries;
-			if (parserentries == nullptr)
-			{
-				throw "parse entries is null";				
-			}
+ 
 
 			//list<PreCodeGenerate*> resuts;
 			CInform::Match::TMatch   ematch;
@@ -248,7 +238,12 @@ namespace CInform
 
 				if (actural_sp == nullptr) break;
 				
+				
 					if (actural_sp->periods.empty()) continue;
+				 
+
+					string r_actural_sp = ListSrcRepr( actural_sp->periods );
+					if (r_actural_sp == "(exit)") break;
 
 					PreCodeGenerate* generateCode = processSourcePreCodeGenerate(pstore, ematch, actural_sp, parserentries);
 					PreCodeGenerate* gs = generateCode;

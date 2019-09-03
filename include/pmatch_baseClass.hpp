@@ -23,7 +23,7 @@ namespace CInform
 
 		class TBlockGroupItemNoum {
 		public:
-			const std::list<HNoum> literals;
+			std::list<HNoum> literals;
 			TBlockGroupItemNoum(std::list<HNoum>  _literals);
 			TBlockGroupItemNoum(  std::list<HNoum>::iterator _begin,   std::list<HNoum>::iterator _end);
 			TBlockGroupItemNoum();
@@ -58,7 +58,7 @@ namespace CInform
 			bool result;
 			std::map<std::string, TBlockGroupItemNoum > bind;
 			MatchResult( bool r ) : result( r ) {}
-			MatchResult( std::string r, const TBlockGroupItemNoum&  val ) : result( true ), bind( std::map<std::string, TBlockGroupItemNoum >{ { r, val }} ) {} // { bind[r] = val; }
+			MatchResult(std::string r, const  TBlockGroupItemNoum& val ) : result( true ) { bind[r] = val; }
 			std::string repr(  );
 			TBlockGroupItemNoum getResult(std::string varName);
 			bool hasBind(std::string varName);

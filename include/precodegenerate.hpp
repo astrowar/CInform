@@ -19,7 +19,7 @@ namespace CInform
 
 		
  
-		class   ParserEntryGroup;
+ 
 
 
 		 
@@ -50,8 +50,6 @@ namespace CInform
 			ParserStore(GrammarContext *gtx);
 			GrammarContext * grammar();
 
-			ParserEntryGroup*  parserentries;
-
 			void push_state();
 			std::string next_temp();
 
@@ -78,6 +76,10 @@ namespace CInform
 
 			bool isComposeType( std::string name );
 			std::list<std::string> demangleg( std::string x );
+
+			bool isNoumReserved( std::string x );
+			bool isPreposition( std::string x);
+			bool isVerb( std::string x );
 		};
 
 		class PreCodeGenerate

@@ -21,13 +21,16 @@ namespace CInform
 
 		HeaderPhaseEntry listToActionSelector_nomSelector( ParserStore *pstore, list<HNoum> xj, string sufix  );
 
-		HeaderPhaseEntry listToComposePredicate_3( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToComposePreposition_3( ParserStore *pstore, list<HNoum> xj, string sufix   );
 
-		HeaderPhaseEntry listToComposePredicate_2( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToComposePreposition_2( ParserStore *pstore, list<HNoum> xj, string sufix   );
 
-		HeaderPhaseEntry listToVerbPredicate( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToVerbPreposition( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
 
 			HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+			HeaderPhaseEntry listToNP( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+			HeaderPhaseEntry listToVerbOnly( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		 
 
 		HeaderPhaseEntry listToArgumentsEntryPatthen_variableSelector( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
 

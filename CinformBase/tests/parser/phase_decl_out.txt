@@ -1,23 +1,4 @@
 code:
-New Kind location  
-New Kind Person  
-BEGIN PHASE4 (A1 is inside B2) BOOL 
-  UNIFY X $k_100  
-  UNIFY $k_100 Person  
-  UNIFY B2 L  
-  UNIFY L location  
-END PHASE   
-
-BEGIN PHASE2 (slam shut B2)  
-  UNIFY B2 box  
-  UNIFY box (an open container)  
-END PHASE   
-
-BEGIN PHASE2 (concatenate B1)  
-  UNIFY B1 name_of<K>  
-  UNIFY K kind_of_value  
-END PHASE   
-
 BEGIN PHASE3 (list of (name of kind of value L) to which/whom A1 relates by A2) ((list of Ls))  
   UNIFY A1 X  
   UNIFY X K  
@@ -25,60 +6,3 @@ BEGIN PHASE3 (list of (name of kind of value L) to which/whom A1 relates by A2) 
   UNIFY R relation<set<value<K>>,L>  
 END PHASE   
 
-New Kind thing  
-New Instance taking action<thing> 
-New Instance cave location 
-New Kind (open container)  
-BEGIN PHASE2 (slam shut B2)  
-  UNIFY B2 box  
-  UNIFY box open_container  
-END PHASE   
-
-BEGIN INSTEAD (taking A1)  
-  UNIFY A1 (the napkin)  
-END INSTEAD   
-
-phaseInsteadwhen ? (entering the throne) (Persephone is on the throne :)  
-BEGIN PHASE3 (list of (name of kind of value L) to which/whom A1 relates by A2) ((list of Ls))  
-  UNIFY A1 X  
-  UNIFY X K  
-  UNIFY A2 R  
-  UNIFY R relation<set<value<K>>,L>  
-END PHASE   
-
-BEGIN PHASE4 (A1 is inside B2) BOOL 
-  UNIFY X $k_101  
-  UNIFY $k_101 Person  
-  UNIFY B2 L  
-  UNIFY L location  
-END PHASE   
-
-BEGIN PHASE4 (A1 is inflamable) BOOL 
-  FORKSTART lb_105 lb_106  
-  LABEL lb_105   
-  UNIFY A1 X  
-  UNIFY X $k_103  
-  UNIFY $k_103 Person  
-  GOTO lb_107   
-  LABEL lb_106   
-  UNIFY A1 $x104  
-  UNIFY $x104 thing  
-  LABEL lb_107   
-  FORKEND    
-END PHASE   
-
-BEGIN PHASE2 (slam shut B2)  
-  UNIFY B2 box  
-  UNIFY box open_container  
-END PHASE   
-
-BEGIN PHASE2 (hunt for B12 in B2)  
-  UNIFY B12 needle  
-  UNIFY needle (value of kind K)  
-  UNIFY B2 haystack  
-  UNIFY haystack list<K>  
-END PHASE   
-
-error:
-Req:cave cannot be used as Selector
-Req:something which is on the grill

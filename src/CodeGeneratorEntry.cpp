@@ -1,9 +1,26 @@
  	
+
+/* Basic Rules for sentence formation
+
+
+S = NP VP
+NP = (det)(adj) N (PP)
+VP = V (NP) (PP)(Adv)
+PP = p NP
+
+
+*/
+
+
+
+
+
 #include "PreCodeGenerate.hpp"
 #include "NSource.hpp"
 #include <headerPhase.hpp>
 
 #include <cctype>
+#include "..\include\componentesSelector.hpp"
 
 using namespace std; 
 
@@ -52,12 +69,6 @@ bool isMuteVariable(string x)
 		{
 			HMatchExpended ah = getPMatchExpended( match, pstore->grammar() );
 			return  MatchThis( txt, ah );
-		}
-
-		std::list<MatchResult > getMatchs( ParserStore *pstore,  list<HNoum> xj , string match )
-		{
-			HMatchExpended ah = getPMatchExpended( match, pstore->grammar() );
-			return  CInform::Match::TMatch::MatchLine( xj, ah );
 		}
 
 
@@ -127,6 +138,8 @@ bool isMuteVariable(string x)
 		}
 		HeaderPhaseEntry listToArgumentsEntryPatthen(ParserStore * pstore, string x, string sufix);
 		HeaderPhaseEntry listToArgumentsEntryPatthen_variableSelector( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToVerbPreposition( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
 
 
 		string get_kind_reference(ParserStore *pstore, string vx, PreCodeGenerate** error);
@@ -135,9 +148,9 @@ bool isMuteVariable(string x)
 	
 
 		
-		//SelectorItem* getSelector( ParserStore *pstore, string val, string sufix, PreCodeGenerate** error );
+		SelectorItem* getSelector( ParserStore *pstore, string val, string sufix, PreCodeGenerate** error );
 
-		SelectorItem* getSelector( ParserStore *pstore, list<HNoum> xj  , string sufix, PreCodeGenerate** error );
+
 
 
 
@@ -155,7 +168,7 @@ bool isMuteVariable(string x)
 				}
 				if (r.hasBind("XB"))
 				{
-					cout << "    bool predicate ? " << r.getResult("XB").repr() << endl;
+					cout << "    bool preposition ? " << r.getResult("XB").repr() << endl;
 				}
 			}
 			return HeaderPhaseEntry();
@@ -183,6 +196,33 @@ bool isMuteVariable(string x)
 			}
 			return HeaderPhaseEntry();
 		}
+
+
+		HeaderPhaseEntry listToXKSeletor( ParserStore *pstore, list<HNoum> x_sel, list<HNoum> k_sel,  string sufix , PreCodeGenerate** error )
+		{
+		  
+			 
+				HeaderPhaseEntry sel;
+				sel.header =   sufix + "1";
+
+				string akind = nlistToString( k_sel);
+				string kind_ref = get_kind_reference( pstore, akind, error );
+				if (kind_ref == "")
+				{
+					return HeaderPhaseEntry();
+				}
+
+				string xa = nlistToString( x_sel );
+
+				sel.args.push_back( new SelectorUnify( sufix + "1", xa ) );
+				sel.args.back()->next = new SelectorUnify( xa, kind_ref );
+
+				return sel;
+			 
+			return HeaderPhaseEntry();
+		}
+
+
 
 		HeaderPhaseEntry listToActionSelector( ParserStore *pstore, list<HNoum> xj, string sufix   )
 		{
@@ -227,18 +267,19 @@ bool isMuteVariable(string x)
 
 		}
 
-		list< SelectorItem*> getArguments( ParserStore *pstore, list<HNoum> val , string argumentName  )
+		list< SelectorItem*> getArguments( ParserStore *pstore, string val , string argumentName  )
 		{
 			PreCodeGenerate* error = nullptr;
 			list< SelectorItem*> args;
 			{
-				//HMatchExpended ah = getPMatchExpended( " (X - K) ", pstore->grammar() ); 
-				//list< MatchResultStr  > rss = CInform::Match::MatchThis( val, ah );
+				HMatchExpended ah = getPMatchExpended( " (X - K) ", pstore->grammar() ); 
+				list< MatchResultStr  > rss = CInform::Match::MatchThis( val, ah );
 				
-				auto rss  = getMatchs( pstore, val, " (X - K) " );
 	 
 				for (auto r : rss)
-				{ 
+				{
+			 
+
 					string akind = r.getResult( "K" ).repr();
 					string kind_ref;
 					if (isMuteVariable( akind ) )
@@ -265,42 +306,51 @@ bool isMuteVariable(string x)
 
 
 			{
-				string txt = nlistToString( val );
-			        if (pstore->isInstance( txt ))
+			        if (pstore->isInstance( val ))
 					{
-						args.push_back( new SelectorUnify( argumentName, txt ) );
+						args.push_back( new SelectorUnify( argumentName, val ) );
 						return args;
-					}  
-			} 
+					} 
+					 
+			}
+
+
 
 			return args;
 		}
 
 
-		SelectorItem* getSelector( ParserStore *pstore  , list<HNoum>  val,   PreCodeGenerate** error )
+		SelectorItem* getSelector( ParserStore *pstore  , string val,   PreCodeGenerate** error )
 		{
-
-			if (nlistToString(val) == "something")
+			if ((val.find( '(' ) != string::npos))
 			{
-				*error = nullptr;
+				if ((val.find( ')' ) != val.size()-1))
+				{
+					return nullptr;
+				}				
+			}
+
+			if (val == "something")
+			{
+				//*error = nullptr;
 				return new SelectorUnify( "$", "thing" );
 			}
 
 			{
 				//(name of kind of value K)
-				auto nss = getMatchs( pstore, val, "X or Y " );
+				list< MatchResultStr  > nss = getMatchs( pstore, val, "X or Y " );
 
 				for (auto r : nss)
 				{					
 					auto tmp1 = "$x" + pstore->next_temp();
-					auto sx = getSelector( pstore, r.getResult( "X" ).literals, tmp1, error );
+					auto sx = getSelector( pstore, r.getResult( "X" ).repr(), tmp1, error );
 					if (sx != nullptr)
 					{
 						auto tmp2 = "$x" + pstore->next_temp();
-						auto sy = getSelector( pstore, r.getResult( "Y" ).literals, tmp2, error );
+						auto sy = getSelector( pstore, r.getResult( "Y" ).repr(), tmp2, error );
 						if (sy !=nullptr)
 						{
-							*error = nullptr;
+							//*error = nullptr;
 						   return 	new SelectorOr( "$",  sx , sy);
 						}
 						
@@ -313,10 +363,10 @@ bool isMuteVariable(string x)
 
 			{
 				//(name of kind of value K)
-			auto nss = getMatchs( pstore, val, "list of K" );
+				list< MatchResultStr  > nss = getMatchs( pstore, val, "list of K" );
 				for (auto r : nss)
 				{
-					auto akind = r.getResult( "K" ).literals;
+					string akind = r.getResult( "K" ).repr();
 					auto sk = getSelector( pstore, akind, error );
 					if (sk !=nullptr)
 					{
@@ -326,7 +376,7 @@ bool isMuteVariable(string x)
 						}
 						auto s1 = new SelectorUnify( "$", "list_of<" + sk->target + ">" );
 						s1->next = sk;
-						*error = nullptr;
+						 
 						return s1;
 					}
 				}
@@ -336,7 +386,7 @@ bool isMuteVariable(string x)
 
 			{
 				//(name of kind of value K)
-				auto nss = getMatchs( pstore, val, "name of kind of value K" );
+				list< MatchResultStr  > nss = getMatchs( pstore, val, "name of kind of value K" );
 				for (auto r : nss)
 				{
 					string akind = r.getResult( "K" ).repr();
@@ -345,44 +395,53 @@ bool isMuteVariable(string x)
 						auto s1 = new SelectorUnify( "$", "name_of<" + akind + ">" );
 						auto s2 = new SelectorKind( akind, "kind_of_value" );
 						s1->next = s2;
-						*error = nullptr;
+					 
 						return s1;
 					}
 				}
 			}
-
-			auto rss = getMatchs( pstore, val, "X - K" );
-			for (auto r : rss)
 			{
-				auto akind = r.getResult( "K" ).literals;
-				string atarget = r.getResult( "X" ).repr();
-				auto sel = getSelector( pstore, akind, error );
-				if (sel !=nullptr)
+				list< MatchResultStr  > rss = getMatchs( pstore, val, "X - K" );
+				for (auto r : rss)
 				{
-					*error = nullptr;
+					string akind = r.getResult( "K" ).repr();
+					string atarget = r.getResult( "X" ).repr();
+					auto sel = getSelector( pstore, akind, error );
+					if (sel != nullptr)
+					{
+						*error = nullptr;
 
-					sel->target = "$k_" + pstore->next_temp();
-					auto s1=  new SelectorKind( atarget, sel->target );
-					s1->next = sel;
-					return s1;
+						sel->target = "$k_" + pstore->next_temp();
+						auto s1 = new SelectorKind( atarget, sel->target );
+						s1->next = sel;
+						return s1;
+					}
+					else
+					{
+						return nullptr;
+					} 
+
 				}
-				
-			} 
 
-			for (auto r : rss)
-			{
-				string akind = r.getResult( "K" ).repr();
-				string atarget = r.getResult( "X" ).repr();
-				if (pstore->isImplicityVar( akind ))
+				for (auto r : rss)
 				{
-					akind = pstore->mangleg( akind );
-					*error = nullptr;
-					return new SelectorUnify( atarget, akind );
+					string akind = r.getResult( "K" ).repr();
+					string atarget = r.getResult( "X" ).repr();
+					if (pstore->isImplicityVar( akind ))
+					{
+						akind = pstore->mangleg( akind );
+
+						return new SelectorUnify( atarget, akind );
+					}
+				}
+				if (rss.empty() == false)
+				{
+					return nullptr;
 				}
 			}
 
 			{
-				string kind_ref = get_kind_reference( pstore, nlistToString(val), error );
+				string kind_ref = get_kind_reference( pstore, val, error );
 				if (kind_ref != "")
 				{
 					*error = nullptr;
@@ -394,13 +453,13 @@ bool isMuteVariable(string x)
 		}
 
 
-		SelectorItem* getSelector_np( ParserStore *pstore, list<HNoum> val, PreCodeGenerate** error )
+		SelectorItem* getSelector_np( ParserStore *pstore, string val, PreCodeGenerate** error )
 		{
 			auto sel = getSelector( pstore, val, error );
 			if (sel != nullptr) return sel;
 			
 			{
-				string inst_ref = get_instance_reference( pstore, nlistToString(val), error );
+				string inst_ref = get_instance_reference( pstore, val, error );
 				if (inst_ref != "")
 				{
 					*error = nullptr;
@@ -410,16 +469,15 @@ bool isMuteVariable(string x)
 			return nullptr;
 		}
 
-
-		SelectorItem* getSelector( ParserStore *pstore, list<HNoum> xj, string avar, PreCodeGenerate** error )
+		SelectorItem* getSelector( ParserStore *pstore, string val, string avar, PreCodeGenerate** error )
 		{
-			auto sel = getSelector( pstore, xj, error );
+			auto sel = getSelector( pstore, val, error );
 			if (sel != nullptr)
 			{
 				if (sel->target != "$")
 				{
 					auto sa = new SelectorUnify( avar, sel->target );
-					sa->next = sel;
+					sa->next = sel;					
 				}
 				else
 				{
@@ -432,30 +490,7 @@ bool isMuteVariable(string x)
 		}
 
 
-
-		//SelectorItem* getSelector( ParserStore *pstore, string  val, string avar, PreCodeGenerate** error )
-		//{
-		//	//auto sel = getSelector( pstore, val, error );
-		//	//if (sel != nullptr)
-		//	//{
-		//	//	if (sel->target != "$")
-		//	//	{
-		//	//		auto sa = new SelectorUnify( avar, sel->target );
-		//	//		sa->next = sel;					
-		//	//	}
-		//	//	else
-		//	//	{
-		//	//		sel->target = avar;
-		//	//	}
-		//	//	*error = nullptr;
-		//	//	return sel;
-		//	//}
-		//	throw "not implemented";
-		//	return nullptr;
-		//}
-
-
-		SelectorItem* getSelector_np( ParserStore *pstore, list<HNoum>  val, string avar, PreCodeGenerate** error )
+		SelectorItem* getSelector_np( ParserStore *pstore, string val, string avar, PreCodeGenerate** error )
 		{
 			auto sel = getSelector_np( pstore, val, error );
 			if (sel != nullptr)
@@ -474,98 +509,48 @@ bool isMuteVariable(string x)
 			return nullptr;
 		}
 
-		HeaderPhaseEntry noumSelector( ParserStore *pstore, list<HNoum> xj, string argument, PreCodeGenerate** error )
-		{ 
-	 
-			{ 
-				auto rss = getMatchs( pstore, xj, " (X - K) " );
 
-				for (auto r : rss)
-				{
-					string akind = r.getResult( "K" ).repr();
-					string kind_ref;
-					if (isMuteVariable( akind ))
-					{
-						kind_ref = akind;
-					}
-					else
-					{
-						kind_ref = get_kind_reference( pstore, akind,  error );
-						if (kind_ref == "")
-						{
-							*error = new   PreCodeGenerateDependency( akind ); 
-							kind_ref = akind;
-						}
-					}
-					HeaderPhaseEntry PHentry;
-					PHentry.header = argument;
-					string xa = r.getResult( "X" ).repr();
-					PHentry.args.push_back( new SelectorUnify( argument, xa ) );
-					PHentry.args.back()->next = new SelectorUnify( xa, kind_ref );
-					return PHentry;
-				}
-			}
-
-
-			{
-				string txt = nlistToString( xj );
-				if (pstore->isInstance( txt ))
-				{
-					HeaderPhaseEntry PHentry;
-					PHentry.args.push_back( new SelectorUnify( argument, txt ) );
-					return PHentry;
-				}
-			}
-
-			return HeaderPhaseEntry(); 
-
- 
-		}
-
-		HeaderPhaseEntry listToComposePredicate_3( ParserStore *pstore, list<HNoum> xj, string sufix , PreCodeGenerate** error )
+		HeaderPhaseEntry listToComposePreposition_3( ParserStore *pstore, list<HNoum> xj, string sufix   )
 		{
-			HMatchExpended ah = getPMatchExpended( "Z0[\\W]  ZA   ZB ", pstore->grammar() );
+			HMatchExpended ah = getPMatchExpended( "Z0 ZA ZB ", pstore->grammar() );
 			list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
-			rss = sorteReverseBy( rss, "ZB" );
-	 
+			PreCodeGenerate* error = nullptr;
+
+			rss = sorteReverseBy( rss, "ZA" );
+			rss= sorteReverseBy( rss ,"ZB");
+
+
 			for (auto r : rss)
 			{
+				if (r.getResult( "ZB" ).literals.size() <= 1) continue;
 
-				//string va_repr = r.getResult( "ZA" ).repr();
-				//string va_name_ref = pstore->getVerbReference( va_repr );
-				//if (va_name_ref == "")	va_name_ref = va_repr;
-
-
-				//string vb_repr = r.getResult( "ZB" ).repr();
-				//string vb_name_ref = pstore->getVerbReference( vb_repr );
-				//if (vb_name_ref == "")	vb_name_ref = vb_repr;
-
+				auto hpB = listToVerbEntry( pstore, r.getResult( "ZB" ).literals, sufix, &error );
+				if (hpB.empty()) continue;
+				
+				if (r.getResult( "ZA" ).literals.size() <= 1) continue;
+				
+				auto hpA = listToVerbEntry( pstore, r.getResult( "ZA" ).literals, sufix, &error );
+				if (hpA.empty()) continue;
 
 
 				HeaderPhaseEntry sel;
 				 
 
-				auto z0 = r.getResult( "Z0" );
-				auto za = r.getResult( "ZA" );
-				auto zb = r.getResult( "ZB" );
 
 
-				auto h2 = noumSelector( pstore, zb.literals, sufix + "3" , error );
-				if (h2.empty()) continue;
 
-				auto h1 = noumSelector( pstore, za.literals, sufix + "2", error );
-				if (h1.empty()) continue;
+				SelectorItem* arg0 = getSelector_np( pstore, r.getResult( "Z0" ).repr(), sufix + "1" , &error );
 
-
-				SelectorItem* arg0 = getSelector( pstore, z0.literals, sufix + "1" , error );
 				if (arg0 ==nullptr) continue;
+
+				sel.header = "["+r.getResult( "Z0" ).repr()+"]"+ " " + hpA.header + " " + hpB.header;
+
+ 
 				 
 
-				sel.header = z0.repr()+" "+  h1.header  + " " + h2.header; 
-
-			 
-				sel.args.insert( sel.args.end(), h1.args.begin(), h1.args.end() );
-				sel.args.insert( sel.args.end(), h2.args.begin(), h2.args.end() );
+				sel.args.push_back( arg0 ); 
+				sel.args.insert( sel.args.end(), hpA.args.begin(), hpA.args.end() );
+				sel.args.insert( sel.args.end(), hpB.args.begin(), hpB.args.end() );
 
 				return sel;
 
@@ -574,10 +559,10 @@ bool isMuteVariable(string x)
 		}
 
 
-		HeaderPhaseEntry listToComposePredicate_2( ParserStore *pstore, list<HNoum> xj, string sufix , PreCodeGenerate** error )
+		HeaderPhaseEntry listToComposePreposition_2( ParserStore *pstore, list<HNoum> xj, string sufix   )
 		{
 			{
-				auto h3 = listToComposePredicate_3( pstore, xj, sufix , error );
+				auto h3 = listToComposePreposition_3( pstore, xj, sufix );
 				if (h3.header.empty() == false)
 				{
 					return h3;
@@ -586,18 +571,18 @@ bool isMuteVariable(string x)
 
 			HMatchExpended ah = getPMatchExpended( "VA  ZA  VB  ZB ", pstore->grammar() );
 			list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
-		 
+			PreCodeGenerate* error = nullptr;
 			for (auto r : rss)
 			{
 
-				auto va_repr = r.getResult( "VA" );
-				string va_name_ref = pstore->getVerbReference( va_repr.repr() );
-				if (va_name_ref == "")	va_name_ref = va_repr.repr();
+				string va_repr = r.getResult( "VA" ).repr();
+				string va_name_ref = pstore->getVerbReference( va_repr );
+				if (va_name_ref == "")	va_name_ref = va_repr;
 
 
-				auto vb_repr = r.getResult( "VB" );
-				string vb_name_ref = pstore->getVerbReference( vb_repr.repr() );
-				if (vb_name_ref == "")	vb_name_ref = vb_repr.repr();
+				string vb_repr = r.getResult( "VB" ).repr();
+				string vb_name_ref = pstore->getVerbReference( vb_repr );
+				if (vb_name_ref == "")	vb_name_ref = vb_repr;
 
 
 
@@ -605,22 +590,22 @@ bool isMuteVariable(string x)
 				sel.header = va_name_ref + " " + sufix + "1" + " " + vb_name_ref + " " + sufix + "2";
 
 
-				auto za = r.getResult( "ZA" ) ;
-				auto zb = r.getResult( "ZB" ) ;
+				string za = r.getResult( "ZA" ).repr();
+				string zb = r.getResult( "ZB" ).repr();
 
 
 
 
-				list< SelectorItem*> args1 = getArguments( pstore, za.literals, sufix + "1" );
+				list< SelectorItem*> args1 = getArguments( pstore, za, sufix + "1" );
 				if (args1.empty()) continue;
 
 				cout << "    " << va_name_ref << endl;
-				cout << "    " << za.repr() << endl;
+				cout << "    " << za << endl;
 				cout << "    " << vb_name_ref << endl;
-				cout << "    " << zb.repr() << endl;
+				cout << "    " << zb << endl;
 
 
-				list< SelectorItem*> args2 = getArguments( pstore, zb.literals, sufix + "2" );
+				list< SelectorItem*> args2 = getArguments( pstore, zb, sufix + "2" );
 				if (args2.empty()) continue;
 
 
@@ -634,9 +619,7 @@ bool isMuteVariable(string x)
 		}
 
 
-
-
-		HeaderPhaseEntry predicativeSelector( ParserStore *pstore, list<HNoum> xj, string argument, PreCodeGenerate** error )
+		HeaderPhaseEntry prepositionSelector( ParserStore *pstore, list<HNoum> xj, string argument, PreCodeGenerate** error )
 		{
 
 			HMatchExpended ah = getPMatchExpended( "P   Sy   ", pstore->grammar() );
@@ -646,39 +629,36 @@ bool isMuteVariable(string x)
 			rss = sorteReverseBy( rss, "Sy" );
 			for (auto r : rss)
 			{
-				auto sy = r.getResult( "Sy" );
-				list< SelectorItem*> args1 = getArguments( pstore, sy.literals, argument );
-				if (args1.empty()) continue;
 
+				string sy = r.getResult( "Sy" ).repr();
+				list< SelectorItem*> args1 = getArguments( pstore, sy, argument );
+				if (args1.empty()) continue;
+				if (pstore->isPreposition( r.getResult( "P" ).repr() ) == false) continue; 
 				HeaderPhaseEntry PHentry;
-				PHentry.header = r.getResult( "P" ).repr()+ " "+ argument;
+				PHentry.header = r.getResult( "P" ).repr() + " " + argument;
 				PHentry.args = args1;
 				return PHentry;
+
 			}
 
 			{
-				auto seletor = noumSelector( pstore,   xj  , argument, error );
-				if (seletor.empty() == false) return seletor;
-				
+				auto seletor = getSelector_np( pstore, nlistToString( xj ), argument, error );
+				if (seletor != nullptr)
+				{
+					HeaderPhaseEntry PHentry;
+					PHentry.header =   argument;
+					PHentry.args = { seletor };
+					return PHentry;
+				}
 			}
 
 			return HeaderPhaseEntry();
 		}
 
 		// NP
-		HeaderPhaseEntry listToVerbPredicate( ParserStore *pstore, list<HNoum> xj,   string sufix,PreCodeGenerate** error   )
+		HeaderPhaseEntry listToVerbPreposition( ParserStore *pstore, list<HNoum> xj,   string sufix,PreCodeGenerate** error   )
 		{
-
-			auto seletor_kd = getSelector( pstore,  xj , sufix + "1", error );
-			if (seletor_kd != nullptr)
-			{
-				HeaderPhaseEntry PHentry;
-				PHentry.header = seletor_kd->target;
-				PHentry.args.push_back( seletor_kd );
-				return PHentry;
-				
-			}
-
+			 
 
 			{
 				HMatchExpended ah = getPMatchExpended( "Sx   Sy   ", pstore->grammar() );
@@ -688,28 +668,24 @@ bool isMuteVariable(string x)
 				rss = sorteReverseBy( rss, "Sy" );
 				for (auto r : rss)
 				{
-					auto h2 = predicativeSelector( pstore, r.getResult( "Sy" ).literals, sufix + "2", error );
+					auto h2 = prepositionSelector( pstore, r.getResult( "Sy" ).literals, sufix + "2", error );
 					if (h2.header.empty()) continue;
 
+					auto h1 = prepositionSelector( pstore, r.getResult( "Sx" ).literals, sufix + "1", error );
+					if (h1.header.empty()) continue;
+ 
+					HeaderPhaseEntry PHentry;
+					PHentry.header = h1.header + " " + h2.header;
+					PHentry.args = h1.args;
+					PHentry.args.insert( PHentry.args.end(), h2.args.begin(), h2.args.end() );
 
-					auto h1 = listToVerbPredicate( pstore, r.getResult( "Sx" ).literals, sufix + "1", error );					
-					if (h1.header.empty() == false)
-					{
-						HeaderPhaseEntry PHentry;
-						PHentry.header = h1.header + " " + h2.header;
-						PHentry.args = h1.args;
-						PHentry.args.insert( PHentry.args.end(), h2.args.begin(), h2.args.end() );
-						return PHentry;
-					}
-
+					return PHentry; 
 				}
-
-
 				//aceita que Sx é um termo auxiliar
 				for (auto r : rss)
 				{
 					auto ls = r.getResult( "Sy" ).repr();
-					auto h2 = predicativeSelector( pstore, r.getResult( "Sy" ).literals, sufix + "2", error );
+					auto h2 = prepositionSelector( pstore, r.getResult( "Sy" ).literals, sufix + "2", error );
 					if (h2.header.empty()) continue;
 
 	 
@@ -723,44 +699,256 @@ bool isMuteVariable(string x)
 					return PHentry;
 				}
 			}
+
+			auto seletor_kd = getSelector( pstore, nlistToString( xj ), sufix + "1", error );
+			if (seletor_kd != nullptr)
+			{
+				HeaderPhaseEntry PHentry;
+				PHentry.header = seletor_kd->target;
+				PHentry.args.push_back( seletor_kd );
+				return PHentry;
+
+			}
 			return HeaderPhaseEntry();
 		}
 
+		// NP = PP + NN  ou  NP = NN
+		HeaderPhaseEntry listToNP( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error )
+		{			
 
-		//VP = V + (VP  || NP )
-		HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error )
-		{
+			// QQcoisa + Seletor
 			{
-				HMatchExpended ah = getPMatchExpended( "V PP[\\W] Np ", pstore->grammar() );
+				HMatchExpended ah = getPMatchExpended( "( X - K ) ", pstore->grammar() );
 				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
-				//PreCodeGenerate* error = nullptr;
 				for (auto r : rss)
 				{
-					auto  sx = r.getResult( "Np" ) ;
-					auto seletor = getSelector_np( pstore, sx.literals, sufix + "1", error );
-					if (seletor == nullptr)
-					{
-						if (*error == nullptr) *error = new   PreCodeGenerateDependency( sx.repr() );
-						continue;
-					}
+					auto hsel = listToXKSeletor( pstore, r.getResult( "X" ).literals, r.getResult( "K" ).literals, sufix, error );
+					if (hsel.empty()) return HeaderPhaseEntry(); 
+					return hsel;
+				}
+			}
+
+
+			// QQcoisa + Seletor
+			{
+				HMatchExpended ah = getPMatchExpended( "Ad[\\W] ( X - K ) ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );				
+				for (auto r : rss)
+				{
+					auto hsel = listToXKSeletor( pstore, r.getResult( "X" ).literals, r.getResult( "K" ).literals , sufix, error );
+					if (hsel.empty()) return HeaderPhaseEntry(); 
+					hsel.header = r.getResult( "Ad" ).repr() + " " + hsel.header;					
+					return hsel; 
+				}
+			}
+
+			{
+				// P + NN
+				HMatchExpended ah = getPMatchExpended( "PP[\\W] Np ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+				rss = sorteReverseBy( rss, "Np" );
+				for (auto r : rss)
+				{
 					string pp_repr = r.getResult( "PP" ).repr();
-					string v_repr = r.getResult( "V" ).repr();
-					string v_name = pstore->getVerbReference( v_repr );
-					if (v_name == "") 	v_name = v_repr;
+					if (pstore->isPreposition( pp_repr ) == false) continue;
+					string sx = r.getResult( "Np" ).repr();
+					auto hpp = listToNP( pstore, r.getResult( "Np" ).literals, sufix, error );
+					if( hpp.empty() ) continue;					 
+					hpp.header = pp_repr +" " + hpp.header;					 
+					return hpp;
+				}
+			}
+
+
+			{
+				auto np = nlistToString( xj );
+				auto seletor = getSelector_np( pstore, nlistToString( xj ), sufix + "1", error );
+				if (seletor != nullptr)
+				{
 					HeaderPhaseEntry PHentry;
-					PHentry.header = v_repr + " " + pp_repr + " " + sufix + "1";
+					PHentry.header = sufix + "1";
 					PHentry.args.push_back( seletor );
 					return PHentry;
 				}
 			}
 
-			//nao tem NP .. entao deve ser tudo valido como verbo
+
+
 			{
-				auto v_repr = nlistToString( xj );
+				// NN + P + NN
+				HMatchExpended ah = getPMatchExpended( "Np PP[\\W] Nq ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+				rss = sorteReverseBy( rss, "Nq" );
+				for (auto r : rss)
+				{
+					string pp_repr = r.getResult( "PP" ).repr();
+					if (pstore->isPreposition( pp_repr ) == false) continue; 
+	 
+					auto hp = listToNP( pstore, r.getResult( "Np" ).literals, sufix+"1", error );
+					if (hp.empty()) continue; 
+		 
+					auto hq = listToNP( pstore, r.getResult( "Nq" ).literals, sufix+"2", error );
+					if (hq.empty()) continue;
+
+					hq.header = pp_repr +" "+ hq.header;
+
+					hp = hp + hq;
+					
+					return hp;
+
+				}
+			}
+
+
+			// NP = NN
+			//Apenas um seletor simples ?
+
+			{
+				auto np = nlistToString( xj );
+				auto seletor = getSelector_np( pstore, nlistToString( xj ), sufix + "1", error );
+				if (seletor == nullptr)
+				{
+					if (*error == nullptr) *error = new   PreCodeGenerateDependency( np );
+					return HeaderPhaseEntry();
+				}
 				HeaderPhaseEntry PHentry;
-				PHentry.header = v_repr   ; 
+				PHentry.header =  sufix + "1";
+				PHentry.args.push_back( seletor );
 				return PHentry;
 			}
+
+
+			return HeaderPhaseEntry();
+
+		}
+
+		HeaderPhaseEntry listToVerbOnly( ParserStore * pstore, list<HNoum> xj, string sufix, PreCodeGenerate ** error )
+		{
+			if (xj.size() == 1)
+			{
+				string vrep = nlistToString( xj );
+				if (pstore->isVerb( vrep ))
+				{
+					HeaderPhaseEntry e;
+					e.header = vrep;
+					return e;
+				}
+
+			}
+			return HeaderPhaseEntry();
+		}
+
+		//VP = V + (VP  || NP )
+		HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error )
+		{
+
+			{HMatchExpended ah = getPMatchExpended( "X - K", pstore->grammar() );
+			   list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+			   if (rss.empty() == false) return HeaderPhaseEntry();
+			}
+			//VP = V + VP + NP )
+
+//sem preposicao
+			{
+				HMatchExpended ah = getPMatchExpended( "V[\\W] Vp Np ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+
+				rss = sorteReverseBy( rss, "Np" );
+				//PreCodeGenerate* error = nullptr;
+				for (auto r : rss)
+				{
+
+					string vv_repr = r.getResult( "V" ).repr();
+					if (pstore->isVerb( vv_repr ) == false) continue;
+
+
+					HeaderPhaseEntry np_entry = listToNP( pstore, r.getResult( "Np" ).literals, sufix + "1", error );
+					if (np_entry.empty()) continue;
+
+
+					HeaderPhaseEntry vp_entry = listToVerbEntry( pstore, r.getResult( "Vp" ).literals, sufix + "0", error );
+					if (vp_entry.empty()) continue;
+
+
+					HeaderPhaseEntry PHentry = vp_entry + np_entry;
+					PHentry.header = vv_repr + " " + PHentry.header;
+
+					return PHentry;
+
+				}
+			}
+
+
+
+			//VP = V  + NP )
+			{
+				HMatchExpended ah = getPMatchExpended( "V[\\W] Np ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+
+				rss = sorteReverseBy( rss, "Np" );
+				//PreCodeGenerate* error = nullptr;
+				for (auto r : rss)
+				{
+					string vv_repr = r.getResult( "V" ).repr();
+					if (pstore->isVerb( vv_repr ) == false) continue;
+					
+					HeaderPhaseEntry np_entry = listToNP( pstore, r.getResult( "Np" ).literals, sufix, error );
+					if (np_entry.empty()) continue;
+
+
+					np_entry.header = vv_repr + " " + np_entry.header;
+					return np_entry;
+
+
+					//HeaderPhaseEntry vp =listToVerbEntry( pstore, r.getResult( "V" ).literals, sufix + "0", error );
+					//if (vp.empty()) continue; 
+ 
+				}
+
+			}
+
+			//VP = V + VP + NP )
+
+			//sem preposicao
+			{
+				HMatchExpended ah = getPMatchExpended( "V[\\W] Vp Np ", pstore->grammar() );
+				list< MatchResult  > rss = CInform::Match::TMatch::MatchLine( xj, ah );
+
+				rss = sorteReverseBy( rss, "Np" );
+				//PreCodeGenerate* error = nullptr;
+				for (auto r : rss)
+				{
+
+					string vv_repr = r.getResult( "V" ).repr();
+					if (pstore->isVerb( vv_repr ) == false) continue;
+
+
+					HeaderPhaseEntry np_entry = listToNP( pstore, r.getResult( "Np" ).literals , sufix + "1", error );
+					if (np_entry.empty()) continue;
+
+
+					HeaderPhaseEntry vp_entry = listToVerbEntry( pstore, r.getResult( "Vp" ).literals, sufix + "0", error );
+					if (vp_entry.empty()) continue;
+ 
+					 
+					HeaderPhaseEntry PHentry = vp_entry + np_entry;
+					PHentry.header = vv_repr + " " + PHentry.header;
+ 
+					return PHentry;
+					
+				}
+			}
+	 
+			//sem preposicao .. apenas NP
+
+
+			////nao tem NP .. entao deve ser tudo valido como verbo
+			//{
+			//	auto v_repr = nlistToString( xj );
+			//	HeaderPhaseEntry PHentry;
+			//	PHentry.header = v_repr   ; 
+			//	return PHentry;
+			//}
 
 			return HeaderPhaseEntry();
 
@@ -769,8 +957,8 @@ bool isMuteVariable(string x)
 		HeaderPhaseEntry listToArgumentsEntryPatthen_variableSelector(ParserStore *pstore, list<HNoum> xj, string sufix , PreCodeGenerate** error )
 		{ 
 			{
-				 
-				auto seletor = getSelector( pstore, xj, sufix+"1", error );
+				string terms = nlistToString( xj );
+				auto seletor = getSelector( pstore, terms, sufix+"1", error );
 				if (seletor != nullptr)
 				{
 					HeaderPhaseEntry sel;
@@ -794,12 +982,12 @@ bool isMuteVariable(string x)
 				    cout << r.repr() << endl;
 					//string xa = r.getResult("XA").repr();
 					 
-					auto akind = r.getResult("K") ;
-					auto k_sel= getSelector(pstore, akind.literals,  error);
+					string akind = r.getResult("K").repr();
+					auto k_sel= getSelector(pstore, akind,  error);
 					if (k_sel == nullptr)
 					{
 
-						if(error!=nullptr) *error = new   PreCodeGenerateDependency( akind.repr() + " cannot be used as Selector" );
+						if(error!=nullptr) *error = new   PreCodeGenerateDependency( akind + " cannot be used as Selector" );
 						//error = new   PreCodeGenerateDependency( akind );
 						continue;
 						//kind_ref = akind;

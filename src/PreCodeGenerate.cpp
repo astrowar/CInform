@@ -1,5 +1,6 @@
 
 #include "PreCodeGenerate.hpp"
+#include <Grammar.hpp>
 
 using namespace std;
 
@@ -179,6 +180,30 @@ namespace CInform
 			return std::list<std::string>();
 		}
 
+		bool ParserStore::isNoumReserved( std::string x )
+		{
+			return  _grammar->isNoumReserved( x );
+		}
+
+		bool ParserStore::isPreposition( std::string x )
+		{
+			return  _grammar->isPreposition( x );
+
+		}
+
+		bool ParserStore::isVerb( std::string x )
+		{
+			if (isPreposition( x )) return false;
+			if (isNoumReserved( x ))return false;
+			if (x.find( ' ' ) != string::npos) return false;
+			for (auto q : x)
+			{
+				if (isalpha( q ) == false) return false;
+			}
+			return true;
+
+		}
+
 		string ParserStore::getReference(string name)
 		{
 			for (auto &e : symbol_stack)
@@ -220,8 +245,11 @@ namespace CInform
 			return "";
 		}
 
+
 		string ParserStore::getVerbReference( string name )
 		{
+			
+
 			//if (isSameNoum( name, "is" )) return "is";
 			for (auto &e : symbol_stack)
 			{
@@ -234,6 +262,7 @@ namespace CInform
 				}
 				
 			}
+
 			return "";
 
 		}

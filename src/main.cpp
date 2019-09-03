@@ -68,7 +68,7 @@ int testes()
 
 int main()
 {
-	// for(int k =0;k< 300;++k)
+	//for(int k =0;k< 300;++k)
 	testes();
 	return 0;
 

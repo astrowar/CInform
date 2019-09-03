@@ -30,8 +30,10 @@ namespace CInform
 		public:
 			string header;
 			list<SelectorItem* > args;
+			bool empty() { return header.empty() && args.empty(); }
+			HeaderPhaseEntry	operator+( const HeaderPhaseEntry  & other );
 
-			bool empty() { return header.empty(); };
+
 		};
 
 		class HeaderPhaseEntrySelector
