@@ -16,9 +16,19 @@ namespace CInform
 		PreCodeGenerateError::PreCodeGenerateError(string _errorMessage) :errorMessage(_errorMessage) {}
 		string PreCodeGenerateError::repr() { return "ERRO: " + errorMessage; }
 		PreCodeGenerateIL::PreCodeGenerateIL() {}
-		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _x) : verb(_verb), noum(_noum), x(_x) {}
-		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _x, string _y) : verb(_verb), noum(_noum), x(_x), y(_y) {}
-		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _obj, string _prop, string _kind) : verb(_verb), noum(_noum), x(_obj), y(_prop), z(_kind) {}
+		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _x) : verb(_verb), noum(_noum), x(_x) 
+		{
+			 
+		}
+		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _x, string _y) : verb(_verb), noum(_noum), x(_x), y(_y) 
+		{
+			 
+		
+		}
+		PreCodeGenerateIL::PreCodeGenerateIL(string _verb, string _noum, string _obj, string _prop, string _kind) : verb(_verb), noum(_noum), x(_obj), y(_prop), z(_kind) 
+		{
+			 
+		}
 
 		string PreCodeGenerateIL::repr()
 		{
@@ -66,8 +76,8 @@ namespace CInform
 		}
 		std::string ParserStore::next_temp()
 		{
-
-			return   std::to_string(temp_id++);
+			int ic = temp_id++;
+			return std::to_string( ic );
 		}
 
 		bool ParserStore::isKind(string nameOfKind)
@@ -212,13 +222,13 @@ namespace CInform
 
 		}
 
-		string ParserStore::getReference(string name)
+		SReference ParserStore::getReference(string name)
 		{
 			for (auto &e : symbol_stack)
 			{
-				string xx = e.getReference(name);
+				SReference xx = e.getReference(name);
 
-				if (xx != "") return xx;
+				if (!xx.empty() ) return xx;
 			}
 
 			//eh um tipo composto ?
@@ -227,11 +237,11 @@ namespace CInform
 				auto ls = demangleg_compose( name );
 				if (ls.size() < 2)
 				{
-					return "";
+					return SReference();
 				}
-				string ref_base;
-				string ref_sub1;
-				string ref_sub2;
+				SReference ref_base;
+				SReference ref_sub1;
+				SReference ref_sub2;
 				
 				
 				ref_base =   ls.front()  ;
@@ -243,18 +253,28 @@ namespace CInform
 
 				if (ref_sub2.empty())
 				{
-					return this->mangleg( ref_base, ref_sub1 );
+					return SReference(this->mangleg( ref_base.repr() , ref_sub1.repr() ));
 				}				
 				
-				return 	this->mangleg( ref_base, ref_sub1, ref_sub2 ); 
+				return 	SReference(this->mangleg( ref_base.repr() , ref_sub1.repr() , ref_sub2.repr() ));
 
 			}
 
-			return "";
+			return SReference();
 		}
 
+		SReference ParserStore::getKindOf( SReference ref )
+		{
+			 
+			for (auto &e : symbol_stack)
+			{
+				auto r = e.getKindOf( ref );
+				if (r.empty() ==false ) return r;
+			}
+			return {};
+		}
 
-		string ParserStore::getVerbReference( string name )
+		SReference ParserStore::getVerbReference( string name )
 		{
 			
 
@@ -271,7 +291,7 @@ namespace CInform
 				
 			}
 
-			return "";
+			return SReference();
 
 		}
 
@@ -288,7 +308,7 @@ namespace CInform
 
 		bool ParserStore::addVerb( string name )
 		{
-			if (name == "")
+			if (name .empty() )
 			{
 				throw "unable to set this";
 			}
@@ -301,38 +321,62 @@ namespace CInform
 
 
 
-		bool ParserStore::addKind(string name, string kindbase)
+		bool ParserStore::addKind(string name, SReference kindbase)
 		{
-			if (kindbase == "")
+			if (kindbase.repr()  .empty() )
 			{
 				throw "unable to set this";
 			}
 
-			auto k = getReference( kindbase );
-			if (k == "")
-			{
-				throw "missing kind definition";
-			}
+			//auto k = getReference( kindbase );
+			//if (k .empty() )
+			//{
+			//	throw "missing kind definition";
+			//}
 
-			auto ref =   this->mangleg( name );
+			auto ref = SReference(  this->mangleg( name ));
 
-			CInform::Kind *kn = new CInform::Kind( ref, k, name );
+			CInform::Kind *kn = new CInform::Kind( ref, kindbase, name );
 
 			symbol_stack.front().addSymbol( kn);
 			return true;
 		}
 
-		bool ParserStore::addInstance(string name, string kindbase)
+		bool ParserStore::addInstance(string name, SReference kindbase)
 		{
-			auto k = getReference( kindbase );
-			if (k == "")
+			auto k =  ( kindbase );
+			if (k .empty())
 			{
 				throw "missing kind definition";
 			}
-			CInform::Instance *inst = new CInform::Instance( "i"+this->mangleg( name ), k, name );
+			if (name.find( '(' ) != string::npos)
+			{
+				throw "noum name error";
+			}
+
+			CInform::Instance *inst = new CInform::Instance( this->mangleg( name ), k, name );
 			symbol_stack.front().addSymbol( inst);
 			return true;
 		}
+
+		bool ParserStore::addGlobalVariable( std::string name, SReference kindbase )
+		{
+			auto k = (kindbase);
+			if (k.empty())
+			{
+				throw "missing kind definition";
+			}
+			if (name.find( '(' ) != string::npos)
+			{
+				throw "noum name error";
+			}
+
+			CInform::Variable *gvar = new CInform::Variable( this->mangleg( name ) , kindbase,name  );
+			symbol_stack.front().addSymbol( gvar );
+			return true;
+		}
+
+
 
 		bool ParserStore::add( Symbol * s )
 		{
@@ -343,6 +387,8 @@ namespace CInform
 
 		std::string ParserStore::mangleg( std::string x )
 		{  
+			while (x.front() == ' ' || x.front() == '\t') x = x.substr( 1, x.size() - 1 );
+			while (x.back() == ' ' || x.front() == '\t') x.pop_back();
 			replaceAll( x, " ", "_" );
 
 			if (toupper( x[0] ) == x[0])
@@ -356,19 +402,33 @@ namespace CInform
 			  return x;
 		}
 
-		std::string ParserStore::mangleg( std::string x, std::string sub )
+		//std::string ParserStore::mangleg( std::string x, std::string sub )
+		//{
+		//	if (sub .empty() )
+		//		throw "error on sub type";
+		//	return mangleg( x ) + "<" + mangleg( sub ) +">";
+		//}
+
+		//std::string ParserStore::mangleg( std::string x, std::string sub )
+		//{
+		//	if (sub .empty() )
+		//		throw "error on sub type";
+		//	return mangleg( x ) + "<" + mangleg( sub ) + ">";
+		//}
+
+		std::string ParserStore::mangleg( std::string x, SReference sub )
 		{
-			if (sub == "")
+			if (sub.empty())
 				throw "error on sub type";
-			return mangleg( x ) + "<" + mangleg( sub ) +">";
+			return mangleg( x ) + "<" +  ( sub.repr() ) + ">";
 		}
 
-		std::string ParserStore::mangleg( std::string x, std::string sub1, std::string sub2 )
+		std::string ParserStore::mangleg( std::string x, SReference sub1, SReference sub2 )
 		{
-			if (sub1 == "")throw "error on sub type 1";
-			if (sub2 == "")throw "error on sub type 2";
+			if (sub1.empty())throw "error on sub type 1";
+			if (sub2.empty())throw "error on sub type 2";
 
-			return mangleg( x ) + "<" + mangleg( sub1 ) + "," + mangleg( sub2 ) + ">";
+			return mangleg( x ) + "<" +  ( sub1.repr() ) + "," +  ( sub2.repr() ) + ">";
 		}
 
 
@@ -403,15 +463,18 @@ namespace CInform
 			return false;
 		}
 
-		string ParserStoreSymbolList::getReference( std::string name )
+		SReference ParserStoreSymbolList::getReference( std::string name )
 		{
 			for (auto q : symbols)
 			{
 				auto sname = q->getName();
-				if (isSameString( sname, name )) return q->ref;			
-				if (isSameString( q->ref, name )) return q->ref;
+				if (isSameString( sname, name )) return q->ref;	 
 			}
-			return "";
+			for (auto q : symbols)
+			{ 
+				if (isSameString( q->ref.repr(), name )) return q->ref;
+			}
+			return {};
 		}
 
 
@@ -429,7 +492,7 @@ namespace CInform
 		}
 
 
-		string ParserStoreSymbolList::getKindOf(string name)
+		SReference ParserStoreSymbolList::getKindOf(string name)
 		{
 			for (auto &s : symbols)
 			{
@@ -437,15 +500,29 @@ namespace CInform
 				{
 					if (isSameNoum( k->getName(), name ))
 					{
-						if (k->baseKind!="")	return k->baseKind;
-						else return "kind";
+						if (k->baseKind.empty() ==false)	return k->baseKind;
+						else return SReference("kind");
 					}
 				}
 			}
-			return "";
+			return {};
 		}
-
-
+ 
+		SReference ParserStoreSymbolList::getKindOf( SReference aref )
+		{
+			for (auto &s : symbols)
+			{
+				if (auto k = dynamic_cast<Kind*>(s))
+				{
+					if( k->ref.repr() == aref.repr() )
+					{
+						if (k->baseKind.empty() == false)	return k->baseKind;
+						else return SReference( "kind" );
+					}
+				}
+			}
+			return {};
+		}
 
 		void ParserStoreSymbolList::addSymbol( Symbol * s )
 		{
@@ -462,10 +539,16 @@ namespace CInform
 		{
 			for (auto &s : symbols)
 			{
-				if (isSameNoum(s->ref, name)) return true;
+				 
 				if (isSameNoum(s->getName(), name )) return true;
-
 			}
+
+			for (auto &s : symbols)
+			{
+				if (isSameNoum( s->ref.repr(), name )) return true;				
+			}
+
+
 			return false;
 		}
 		PreCodeGenerateDependency::PreCodeGenerateDependency(string _requiredSymbol) : requiredSymbol(_requiredSymbol)
@@ -485,6 +568,8 @@ namespace CInform
 		}
 		PreCodeGenerate*  PreCodeGenerate::add(PreCodeGenerate * atail)
 		{
+			if (atail == nullptr) return this;
+
 			if (tail == nullptr)	  tail = atail;
 			else { tail->add(atail); };
 			return this;

@@ -46,7 +46,7 @@ public:
 
 int testes()
 {
-	std::list<string> file_names = { "phase_decl" , "instancias" };
+	std::list<string> file_names = { "instancias" , "phase_decl"   };
 	for (auto n : file_names)
 	{
 		std::ifstream t_input("tests/parser/" + n + ".txt");

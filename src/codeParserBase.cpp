@@ -96,6 +96,7 @@ namespace CInform
 				if (codeGen->isError())
 				{
 					lastError = codeGen;
+					break;
 					continue;
 				}
 				else

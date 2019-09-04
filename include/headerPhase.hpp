@@ -19,11 +19,11 @@ namespace CInform
 	{
 
 		string removeArticle( ParserStore *pstore, string compound );
-		string get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error );
-		string get_kind_reference( ParserStore *pstore, string kindname, PreCodeGenerate** error );
-		string get_verb_reference( ParserStore *pstore, string verb, PreCodeGenerate** error );
-		list<string> get_adj_instance_reference( ParserStore *pstore, string adj_instname, PreCodeGenerate** error );
-		string get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error );
+		SReference get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error );
+		SReference get_kind_reference( ParserStore *pstore, string kindname, PreCodeGenerate** error );
+		SReference get_verb_reference( ParserStore *pstore, string verb, PreCodeGenerate** error );
+		list<SReference> get_adj_instance_reference( ParserStore *pstore, string adj_instname, PreCodeGenerate** error );
+		SReference get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error );
 
 		class HeaderPhaseEntry
 		{

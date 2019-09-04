@@ -172,10 +172,10 @@ namespace CInform
 				if (auto pList = dynamic_cast<const PList*>(m))
 				{
 
-					if (pList->val.size() == 1)
+		/*			if (pList->val.size() == 1)
 					{
 						return MatchLine_s( xs, pList->val.front().get() );
-					}
+					}*/
 
 					list<MatchResult> rlist;		 
 				    TBlockGroupNoum acc;

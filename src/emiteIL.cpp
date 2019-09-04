@@ -24,7 +24,7 @@ namespace CInform
 
 			if (SelectorKind* s_unify = dynamic_cast<SelectorKind*>(sel))
 			{
-				return { new   PreCodeGenerateIL( "UNIFY", s_unify->target, s_unify->kindRef ) };
+				return { new   PreCodeGenerateIL( "UNIFY", s_unify->target, s_unify->kindRef.repr() ) };
 			}
 
 			if (SelectorOr* s_unify = dynamic_cast<SelectorOr*>(sel))
@@ -65,9 +65,9 @@ namespace CInform
 			list<PreCodeGenerateIL*> il_s = emiteILCode_i( pstore, sel );
 			ret.insert(ret.end(), il_s.begin(),il_s.end() );
 
-			while (sel->next != nullptr)
+			while (sel->next() != nullptr)
 			{
-				sel = sel->next;
+				sel = sel->next();
 				il_s = emiteILCode_i( pstore, sel );
 				ret.insert( ret.end(), il_s.begin(), il_s.end() );
 			}

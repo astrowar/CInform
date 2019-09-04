@@ -1,13 +1,67 @@
 code:
 New Kind thing  
-New Instance abajour thing 
-BEGIN PHASE1 (carry A11 from A211 to A221 )  
-  UNIFY A11 iabajour  
-  UNIFY A211 M  
+New Instance white_abajour thing 
+Set Name white_abajour (white abajour)  
+BEGIN PHASE1 (carry A211 from A2211 to A2221 )  
+  UNIFY A211 white_abajour  
+  UNIFY A2211 M  
   UNIFY M $k_104  
   UNIFY $k_104 text  
-  UNIFY A221 N  
+  UNIFY A2221 N  
   UNIFY N $k_105  
   UNIFY $k_105 text  
 END PHASE   
 
+BEGIN PHASE1 (set the background color for A222211 to A222221    )  
+  UNIFY A222211 style  
+  UNIFY style $k_106  
+  UNIFY $k_106 text  
+  UNIFY A222221 N  
+  UNIFY N $k_107  
+  UNIFY $k_107 text  
+END PHASE   
+
+BEGIN PHASE3 (the fibonacci index of A2221   ) number 
+  UNIFY A2221 index  
+  UNIFY index $k_108  
+  UNIFY $k_108 number  
+END PHASE   
+
+New Kind (open container)  
+BEGIN PHASE1 (slam shut A221  )  
+  UNIFY A221 box  
+  UNIFY box $k_109  
+  UNIFY $k_109 open_container  
+END PHASE   
+
+BEGIN PHASE3 (list of A2211 to which/whom A2222211 relates by A22222221       ) ((list of Ls))  
+  UNIFY A2211 name_of<L>  
+  UNIFY L kind_of_value  
+  UNIFY A2222211 X  
+  UNIFY X $k_115  
+  UNIFY $k_115 K  
+  UNIFY A22222221 R  
+  UNIFY R $k_114  
+  UNIFY $k_114 relation_of<$k_112,$k_113>  
+  UNIFY $k_112 value_of<$k_111>  
+  UNIFY $k_111 K  
+  UNIFY $k_113 Ls  
+END PHASE   
+
+BEGIN PHASE1 (hunt for A211 in A221 )  
+  UNIFY A211 needle  
+  UNIFY needle $k_117  
+  UNIFY $k_117 value_of<$k_116>  
+  UNIFY $k_116 K  
+  UNIFY A221 haystack  
+  UNIFY haystack $k_119  
+  UNIFY $k_119 list_of<$k_118>  
+  UNIFY $k_118 Ks  
+END PHASE   
+
+BEGIN PHASE1 (concatenate A21 )  
+  UNIFY A21 name_of<K>  
+  UNIFY K kind_of_value  
+END PHASE   
+
+ERRO: E:Symbolo ja existe: thing

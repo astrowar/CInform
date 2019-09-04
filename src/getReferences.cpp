@@ -14,31 +14,31 @@ namespace CInform
 		std::list<MatchResultStr> getMatchs( ParserStore *pstore, string txt, string match );
 
 
-		string get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error )
+		SReference get_instance_reference( ParserStore *pstore, string instname, PreCodeGenerate** error )
 		{
 			if (pstore->isInstance( instname ))
 			{
 				return pstore->getReference( instname );
 			}
 
-			return "";
+			return {};
 		}
 
 
 
-		bool is_adjetive_valid_for_reference( ParserStore *pstore, string adj_noum, string inst_ref )
+		bool is_adjetive_valid_for_reference( ParserStore *pstore, string adj_noum, SReference inst_ref )
 		{
 			return true;
 		}
 
-		list<string> get_adj_instance_reference( ParserStore *pstore, string adj_instname, PreCodeGenerate** error )
+		list<SReference> get_adj_instance_reference( ParserStore *pstore, string adj_instname, PreCodeGenerate** error )
 		{
 			auto rss = getMatchs( pstore, adj_instname, "X Y" );
 			for (auto rs : rss)
 			{
 				auto inst_name = rs.getResult( "Y" ).repr();
 				auto inst_ref = get_instance_reference( pstore, inst_name, nullptr );
-				if (inst_ref != "")
+				if (inst_ref.empty() ==false )
 				{
 					auto adj_noum = rs.getResult( "X" ).repr();
 					bool is_adj_of = is_adjetive_valid_for_reference( pstore, adj_noum, inst_ref );
@@ -53,7 +53,7 @@ namespace CInform
 
 
 
-		string get_kind_reference( ParserStore *pstore, string kindname, PreCodeGenerate** error )
+		SReference get_kind_reference( ParserStore *pstore, string kindname, PreCodeGenerate** error )
 		{
 
 			
@@ -65,7 +65,7 @@ namespace CInform
 				if (pstore->isImplicityVar( kindname )) return pstore->mangleg( kindname );
 			}
 
-			if (kindname.find( '-' ) != string::npos) return "";
+			if (kindname.find( '-' ) != string::npos) return {};
 
 			if (pstore->isKind( kindname ))
 			{
@@ -74,23 +74,23 @@ namespace CInform
 
 
 			string kindref = isCompound( pstore, kindname, error );
-			if (*error != nullptr) return "";
-			if (kindref != "") 	return kindref;
+			if (*error != nullptr) return {};
+			if (kindref .empty() ==false) 	return kindref;
 
 			*error = new   PreCodeGenerateDependency( kindname );
-			return "";
+			return {};
 
 		}
 
 
-		string get_verb_reference( ParserStore *pstore, string verb, PreCodeGenerate** error )
+		SReference get_verb_reference( ParserStore *pstore, string verb, PreCodeGenerate** error )
 		{
-			string vname = pstore->getVerbReference( verb );
-			if (vname != "") return vname;
+			SReference vname = pstore->getVerbReference( verb );
+			if (vname.empty()==false) return vname;
 
 			//raise some error
 			*error = new   PreCodeGenerateDependency( verb );
-			return "";
+			return {};
 		}
 
 

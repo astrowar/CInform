@@ -18,8 +18,7 @@ namespace CInform
 
 
 		
- 
- 
+	
 
 
 		 
@@ -35,8 +34,9 @@ namespace CInform
 			bool isValue(std::string name);
 			bool isKind(std::string name);
 			bool isInstance(std::string name);		 
-			string getReference(std::string name);
-			string getKindOf( std::string name );
+			SReference getReference(std::string name);
+			SReference getKindOf( std::string name );
+			SReference getKindOf( SReference aref );
 		};
 
 
@@ -55,11 +55,13 @@ namespace CInform
 			void push_state();
 			std::string next_temp();
 
-			string getReference(string name); //obtem o nome interno do objeto
+			SReference getReference(string name); //obtem o nome interno do objeto
 
-			string getVerbReference( string name );
+			SReference getVerbReference( string name );
 
-			bool isValue(std::string name);
+			SReference getKindOf( SReference ref );
+
+			bool isValue(std::string name);			
 			bool isKind(std::string name);
 			bool isImplicityVar( std::string name );
 			bool isInstance(std::string name);
@@ -67,14 +69,20 @@ namespace CInform
 
 			bool isSymbol(std::string name);
 			bool addVerb( string name );
-			bool addKind(std::string name, std::string kindbase);
-			bool addInstance(std::string name, std::string kindbase);
+			bool addKind(std::string name, SReference kindbase);
+			bool addInstance(std::string name, SReference kindbase);
+
+			bool addGlobalVariable( std::string name, SReference kindbase );
 
 			bool add( Symbol *s );
 
 			std::string mangleg( std::string x );
-			std::string mangleg( std::string x, std::string sub );
-			std::string mangleg( std::string x, std::string sub1, std::string sub2 );
+			//std::string mangleg( std::string x, std::string sub );
+			//std::string mangleg( std::string x, std::string sub1, std::string sub2 );
+
+			std::string mangleg( std::string x, SReference sub );
+			std::string mangleg( std::string x, SReference sub1, SReference sub2 );
+
 
 			bool isComposeType( std::string name );
 			std::list<std::string> demangleg( std::string x );
@@ -160,6 +168,7 @@ namespace CInform
 			PreCodeGenerateIL(std::string _verb, std::string _noum, std::string _x, std::string _y, std::string _z);
 			PreCodeGenerateIL(std::string _verb, std::string _noum, std::string _x, std::string _y);
 			PreCodeGenerateIL(std::string _verb, std::string _noum, std::string _x);
+		 
 			virtual std::string repr();
 		};
 
@@ -179,8 +188,8 @@ namespace CInform
 		list<string> get_list_or( ParserStore *pstore, string slist );
 		list<string> get_list_and( ParserStore *pstore, string slist );
 
-		GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, Match::TBlockGroupItemNoum vx );
-		GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, string compound );
+		//GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, Match::TBlockGroupItemNoum vx );
+		//GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, string compound );
 		PreCodeGenerate* codeGenerate(ParserStore *pstore, PreCodeGenerate* prev_generate, std::string entryName, Match::TBlockGroupItemNoum vx, Match::TBlockGroupItemNoum vy, Match::TBlockGroupItemNoum vz);
 	}
 }

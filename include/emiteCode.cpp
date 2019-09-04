@@ -48,6 +48,10 @@ namespace CInform
 
 				//A object  is usually portable
 				parserentries_list.emplace_back( "assertUsually", getPMatchExpended( " X is/are usually Y ", gtx ) );
+
+
+				parserentries_list.emplace_back( "assertVariable", getPMatchExpended( " X is/are ?a/an/some  Y that varies ", gtx ) );
+				 
 			}
 
 			ParserEntryGroup*  parserentries = new ParserEntryGroup(parserentries_list);
@@ -76,11 +80,11 @@ namespace CInform
 
 			//fill pstore
 			
-			pstore->add( new CInform::Kind( "kind", "", "kind" ));
-			pstore->add( new CInform::Kind( "value", "kind", "value" ) );
-			pstore->add( new CInform::Kind( "number", "value", "number" ) );
-			pstore->add( new CInform::Kind( "action", "kind", "action" ) );
-			pstore->add( new CInform::Kind( "text", "kind", "text" ) );
+			pstore->add( new CInform::Kind( SReference("kind"),   "kind" ));
+			pstore->add( new CInform::Kind( SReference("value"), SReference( "kind" ), "value" ) );
+			pstore->add( new CInform::Kind( SReference("number"), SReference( "value" ), "number" ) );
+			pstore->add( new CInform::Kind( SReference("action"), SReference( "kind" ), "action" ) );
+			pstore->add( new CInform::Kind( SReference("text"), SReference( "kind" ), "text" ) );
 			
 
 			testsForSelector( pstore );

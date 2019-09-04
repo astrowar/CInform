@@ -1,3 +1,18 @@
+rule is an kind
+cloth is an kind
+An excuse is some text that varies.
+What worked last time is a rule that varies.
+
+T-shirt, jeans, and a pair of shoes are cloth.
+
+
+An cloth has a number called the horizontal size
+exit
+
+brightnesses is a kind of value
+The brightnesses are (ultra strong) ,guttering, weak, radiant and blazing
+ 
+
 A distance is a kind of number 
  
 object is an kind
@@ -8,10 +23,9 @@ A object  is usually portable
 the book is an object
 the book has a number called number of pages
 
-A distance is a kind of number 
+ 
 A distance can be far or near.
 
-A number is a kind of value
+A float is a kind of value
 
-brightnesses is a kind of value
-The brightnesses are guttering, weak, radiant and blazing
+ 

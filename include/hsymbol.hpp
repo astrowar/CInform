@@ -4,6 +4,7 @@
 #ifndef  HSYMB_HPP
 #define  HSYMB_HPP
 
+#include "sreference.hpp"
 #include <string>
 
 namespace CInform
@@ -15,8 +16,8 @@ namespace CInform
 	class Symbol
 	{
 	public:
-		std::string ref;   //nome de referencia mangled 
-		Symbol( std::string  _ref ) :ref( _ref ) {} 
+		SReference ref;   //nome de referencia mangled 
+		Symbol( SReference  _ref ) :ref( _ref ) {}
 		virtual  std::string getName() = 0;
 		virtual  SYMBTYPE getType() = 0; 
 	};
@@ -25,9 +26,9 @@ namespace CInform
 	{
 	public:	 
 		std::string name;
-		std::string baseKind;
-		Kind( std::string  _ref, std::string  _name ) :Symbol( _ref ), name(_name) , baseKind(nullptr){}
-		Kind( std::string  _ref, std::string _baseKind, std::string  _name ) :Symbol( _ref ), name( _name ) , baseKind(_baseKind ) {}
+		SReference baseKind;
+		Kind( SReference  _ref, std::string  _name ) :Symbol( _ref ), name(_name) , baseKind(""){}
+		Kind( SReference  _ref, SReference _baseKind, std::string  _name ) :Symbol( _ref ), name( _name ) , baseKind(_baseKind ) {}
 
 		
 		virtual std::string getName() override;
@@ -39,16 +40,16 @@ namespace CInform
 	class KindCompose : public Kind
 	{
 	public:		 
-		std::string innerKind;
-		KindCompose( std::string  _ref, std::string  _name  , std::string _baseKind , std::string _innerKind  ) :Kind( _ref  ,_name ),   innerKind( _innerKind ){ }
+		SReference innerKind;
+		KindCompose( SReference  _ref, std::string  _name  , SReference _baseKind , SReference _innerKind  ) :Kind( _ref  ,_name ),   innerKind( _innerKind ){ }
 	};
 
 	class KindComposeDual : public Kind
 	{
 	public:
-		std::string innerKind_A;
-		std::string innerKind_B;
-		KindComposeDual( std::string  _ref, std::string  _name, std::string _baseKind, std::string _innerKind_A, std::string _innerKind_B ) :Kind( _ref, _name ), innerKind_A( _innerKind_A ), innerKind_B( _innerKind_B ) { }
+		SReference innerKind_A;
+		SReference innerKind_B;
+		KindComposeDual( SReference  _ref, std::string  _name, SReference _baseKind, SReference _innerKind_A, SReference _innerKind_B ) :Kind( _ref, _name ), innerKind_A( _innerKind_A ), innerKind_B( _innerKind_B ) { }
 
 		
 		virtual SYMBTYPE getType() override;
@@ -58,8 +59,8 @@ namespace CInform
 	{
 	public:
 		std::string name;
-		std::string baseKind;
-		Instance( std::string  _ref,  std::string _baseKind ,  std::string  _name) :Symbol( _ref  ), baseKind( _baseKind ), name( _name ) {}
+		SReference baseKind;
+		Instance( SReference  _ref, SReference _baseKind ,  std::string  _name) :Symbol( _ref  ), baseKind( _baseKind ), name( _name ) {}
 
 		
 		virtual std::string getName() override;
@@ -71,7 +72,7 @@ namespace CInform
 	class RelationKind : public KindCompose
 	{
 	public:
-		RelationKind( std::string  _ref, std::string  _name, std::string _from, std::string _to ) :KindCompose( _ref, _name  , _from,_to )  { }
+		RelationKind( SReference  _ref, std::string  _name, SReference _from, SReference _to ) :KindCompose( _ref, _name  , _from,_to )  { }
 
 	 
 		virtual SYMBTYPE getType() override;
@@ -87,8 +88,8 @@ namespace CInform
 	class  Value  : public Symbol
 	{
 	public:
-		std::string base;
-		Value( std::string  _ref  , std::string _base ) :Symbol( _ref ), base(_base) { }
+		SReference base;
+		Value( SReference  _ref  , SReference _base ) :Symbol( _ref ), base(_base) { }
 		virtual SYMBTYPE getType() override;
 	};
 
@@ -97,7 +98,7 @@ namespace CInform
 	{
 	public:
 	 
-		Number( std::string  _ref  ) :Value( _ref, "number" )  { }
+		Number( SReference  _ref  ) :Value( _ref, SReference("number") )  { }
 	};
 
 
@@ -109,7 +110,7 @@ namespace CInform
 	{
 	public:
 		std::string text;
-		Text( std::string  _ref , std::string _text ) :Value( _ref ,  "text" ), text(_text) { }
+		Text( SReference  _ref , std::string _text ) :Value( _ref , SReference("text") ), text(_text) { }
 	};
 
 
@@ -118,7 +119,7 @@ namespace CInform
 	{
 	public:
 		bool value;
-		Boolean( std::string  _ref, bool _value ) :Value( _ref ,"boolean"), value( _value ) { }
+		Boolean( SReference  _ref, bool _value ) :Value( _ref , SReference("boolean")), value( _value ) { }
 	};
 
 
@@ -126,7 +127,7 @@ namespace CInform
 	{
 	public:
 		std::string name;
-		Verb( std::string  _ref, std::string  _name ) :Value( _ref, "verb" ),name(_name) { } 
+		Verb( SReference  _ref, std::string  _name ) :Value( _ref, SReference("verb") ),name(_name) { }
 
 		// Herdado por meio de Value
 		virtual std::string getName() override;
@@ -138,8 +139,12 @@ namespace CInform
 	{
 	public:
 		std::string name;
-		Value *value;
-		Variable( std::string  _ref, std::string _name, Value* _value ) :Symbol( _ref ), name( _name ),value( _value ) { }
+		SReference valuekind;
+		Variable( SReference  _ref,SReference _valuekind, std::string _name   ) :Symbol( _ref ), name( _name ), valuekind( _valuekind ) { }
+
+		// Herdado por meio de Symbol
+		virtual std::string getName() override;
+		virtual SYMBTYPE getType() override;
 	};
 
 	

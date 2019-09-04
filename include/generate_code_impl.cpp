@@ -13,13 +13,71 @@ namespace CInform
 	namespace CodeParser
 	{
 
+		bool cleanNoum( string &x )
+		{
+			while (x.front() == ' ') 
+			{
+				x = x.substr( 1, x.size() - 1 );
+			}
+			while (x.back() == ' ')
+			{
+				x.pop_back();
+			}
+			if (x.front() == '(' && x.back() == ')')
+			{
+				x = x.substr( 1, x.size() - 2 );
+				return cleanNoum( x );
+			}
+			return true;
+		}
+
+		bool isKindOfValue( ParserStore* pstore, string symbol )
+		{
+			int k = 0;
+			auto ref = pstore->getReference( symbol );
+			do{
+				k++;
+				if (ref.repr() == "value") return true;
+				if (ref.repr() == "kind") return false;
+				if (ref.empty()) return false;
+				ref = pstore->getKindOf( ref );
+			} while (k< 20); 
+			return false;
+		}
+
+
+
+		void split_article( ParserStore *pstore, string &a, string &x )
+		{
+			size_t ipos = x.find( ' ' );
+			if (ipos != string::npos)
+			{
+				if (pstore->isArticle( x.substr( 0, ipos )))
+				{
+					a = x.substr( 0, ipos );
+					x = x.substr( ipos, x.size() - ipos );
+				}
+			}
+
+			cleanNoum( x );
+		}
+
 		PreCodeGenerate*  create_kind( ParserStore *pstore, PreCodeGenerate* prev_generate, string newKindName  )
 		{			 
+			if (cleanNoum( newKindName ) == false) return nullptr;
+
+			if (pstore->getReference( newKindName ).empty() == false)
+			{
+				cout << "ja existe" << endl;
+				return  new PreCodeGenerateError( "E:Symbolo ja existe: "+ newKindName );;
+			}
+
+
 			PreCodeGenerate* error = nullptr;
-			string hasKindnamed = get_kind_reference( pstore, newKindName, &error );
-			if (hasKindnamed != "")return new PreCodeGenerateError( "E:Symbolo ja existe" );
-			//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe");
-			pstore->addKind( newKindName, "kind" );
+			auto hasKindnamed = get_kind_reference( pstore, newKindName, &error );
+			if (hasKindnamed.empty() ==false )return new PreCodeGenerateError( "E:Symbolo ja existe:" );
+			//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe:");
+			pstore->addKind( newKindName, SReference("kind") );
 			return  new  PreCodeGenerateIL( "New", "Kind", newKindName );
 		}
 
@@ -27,50 +85,212 @@ namespace CInform
 
 		PreCodeGenerate*  create_kind_of( ParserStore *pstore, PreCodeGenerate* prev_generate, string insName,string kindname )
 		{
+			if (cleanNoum( insName ) == false) return nullptr;
+
+
 			PreCodeGenerate* error = nullptr;
-			string kind = get_kind_reference( pstore, kindname, &error );
+			auto kind = get_kind_reference( pstore, kindname, &error );
 			if (error != nullptr) return error;
-			PreCodeGenerate* article_code = nullptr;
+			string  article_str = "";
 			if (insName.find( ' ' ) != string::npos)
 			{
-				auto gs = codeGenerateArticle( pstore, prev_generate, insName );
-				insName = gs.entryName;
-				article_code = gs.IL;
+				split_article(pstore, article_str, insName );
 			}
-			pstore->addKind( insName, kind );
-			return (new   PreCodeGenerateIL( "New", "Kind", insName, kind ))->add( article_code );
+			
+			 
+
+			{
+				if(pstore->getReference( insName ).empty() ==false )				
+				{
+					cout << "ja existe" << endl;
+					return  new PreCodeGenerateError( "E:Symbolo ja existe: " + insName  );;
+				}
+			}
+
+
+			if (pstore->addKind( insName, kind ))
+			{
+				auto ins_ref = pstore->getReference( insName );
+
+				PreCodeGenerate* r = new   PreCodeGenerateIL( "New", "Kind", ins_ref.repr() , kind.repr()  );
+
+				if (ins_ref.repr() != insName )       r->add( new  PreCodeGenerateIL( "Set", "Name", ins_ref.repr() , insName ) );
+
+				if (article_str .empty() ==false)
+				{
+					r->add( new  PreCodeGenerateIL( "Set", "article", ins_ref.repr() , article_str ) );
+				}
+
+
+				return r;
+			}
+			return nullptr;
 		}
 
 		PreCodeGenerate*  create_instance( ParserStore *pstore, PreCodeGenerate* prev_generate, string insName,string kind )
 		{
+			if (cleanNoum( insName ) == false) return nullptr;
 
 			if(isSameNoum( kind,"kind")) return create_kind(pstore, prev_generate, insName);
 
 			PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
 				PreCodeGenerate* error = nullptr;
-				string kind_reference = get_kind_reference( pstore, kind, &error );
+				SReference kind_reference = get_kind_reference( pstore, kind, &error );
 				if (error != nullptr) return error; 
 				//if (pstore->isSymbol(kind) == false ) return  new   PreCodeGenerateDependency(kind);
 				PreCodeGenerate* article_code = nullptr;
+				string article_str = "";
 				if (insName.find(' ') != string::npos)
 				{
-					auto gs = codeGenerateArticle( pstore, prev_generate, insName );
-					insName = gs.entryName;
-					article_code = gs.IL;
+					split_article(pstore, article_str, insName );
 				}
-				auto ins_ref = pstore->getReference( insName );
-				if (ins_ref != "")
+				 
+
+				SReference ins_ref = pstore->getReference( insName );
+				if (ins_ref.empty() ==false )
 				{
 					cout << "ja existe" << endl;
-					return  new PreCodeGenerateError( "E:Symbolo ja existe" );;
+					return  new PreCodeGenerateError( "E:Symbolo ja existe: " + insName );;
 				}
 
-				pstore->addInstance( insName, kind_reference );
-				return  prev_generate_local->add( (new  PreCodeGenerateIL( "New", "Instance", insName, kind_reference ))->add( article_code ) );
+				if (pstore->addInstance( insName, kind_reference ))
+				{
+					auto ins_refq = pstore->getReference( insName );
+					prev_generate_local->add( new  PreCodeGenerateIL( "New", "Instance", ins_refq.repr() , kind_reference.repr()  ));
+					if(ins_refq.repr()!= insName)prev_generate_local->add( new  PreCodeGenerateIL( "Set", "Name", ins_refq.repr() , insName ) );
 
+					if (article_str .empty() ==false)
+					{
+						prev_generate_local->add( new  PreCodeGenerateIL( "Set", "article", ins_refq.repr() , article_str ) );
+					}
+					return prev_generate_local;
+				}
+				return nullptr;
+		}
+
+		PreCodeGenerate*  newValueInstance( ParserStore *pstore, PreCodeGenerate* prev_generate, string valuName, string kind )
+		{
+			if (cleanNoum( valuName ) == false) return nullptr;
+			PreCodeGenerate* error = nullptr; 
+			SReference kind_reference = get_kind_reference( pstore, kind, &error );
+			if (error != nullptr) return error;
+			string article_str = "";
+			if (valuName.find( ' ' ) != string::npos)
+			{
+				split_article( pstore, article_str, valuName );
+			}
+			SReference val_ref = pstore->getReference( valuName );
+			if (val_ref.empty() == false)
+			{
+				cout << "ja existe" << endl;
+				return  new PreCodeGenerateError( "E:Symbolo ja existe: " + valuName );;
+			}
+			if(pstore->addInstance( valuName, kind_reference ) )
+			{
+				PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
+				auto val_ref = pstore->getReference( valuName );
+				prev_generate_local->add( new  PreCodeGenerateIL( "New", "Value", val_ref.repr(), kind_reference.repr() ) );
+				if (val_ref.repr() != valuName) prev_generate_local->add( new  PreCodeGenerateIL( "Set", "name", val_ref.repr(), valuName ) );
+				return  prev_generate_local;
+			} 
+			return nullptr;
 		}
 
 
+
+
+		PreCodeGenerate*  newVariable( ParserStore *pstore, PreCodeGenerate* prev_generate, string varName, string kind )
+		{
+			if (cleanNoum( varName ) == false) return nullptr;
+			PreCodeGenerate* error = nullptr;
+			SReference kind_reference = get_kind_reference( pstore, kind, &error );
+			if (error != nullptr) return error;
+			string article_str = "";
+			if (varName.find( ' ' ) != string::npos)
+			{
+				split_article( pstore, article_str, varName );
+			}
+			SReference val_ref = pstore->getReference( varName );
+			if (val_ref.empty() == false)
+			{
+				cout << "ja existe" << endl;
+				return  new PreCodeGenerateError( "E:Symbolo ja existe: " + varName );;
+			}
+			if (pstore->addGlobalVariable( varName, kind_reference ))
+			{
+				PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
+				auto val_ref = pstore->getReference( varName );
+				prev_generate_local->add( new  PreCodeGenerateIL( "New", "Variable", val_ref.repr(), kind_reference.repr() ) );
+				if (val_ref.repr() != varName) prev_generate_local->add( new  PreCodeGenerateIL( "Set", "Name", val_ref.repr(), varName ) );
+				return  prev_generate_local;
+			}
+			return nullptr;
+		}
+
+
+		PreCodeGenerate* 	createAssertadjetive( ParserStore *pstore, PreCodeGenerate* prev_generate, string symbol  , string value  )
+		{
+			PreCodeGenerate* error = nullptr;
+			PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
+	 
+
+			if (symbol.find( " and " ) != string::npos)
+			{
+				auto olist = get_list_and( pstore, symbol );
+				for (auto o : olist)
+				{
+					PreCodeGenerate*  r = create_instance( pstore, prev_generate, o, value );
+					prev_generate_local->add( r );
+				}
+				return prev_generate_local;
+
+			}
+
+			if (pstore->isInstance( symbol ))
+			{
+				//fazendo um assert em um tipo
+				for (auto o : get_list_and( pstore, value ))
+				{
+					prev_generate_local->add( new   PreCodeGenerateIL( "Set", symbol, o ) );
+				}
+				return prev_generate_local;
+			}
+
+			if (isKindOfValue( pstore, symbol ))
+			{
+				//kind of value ??? 
+				//enum de values ?
+				list<string> o_values = get_list_and( pstore, value );
+				for (auto o : o_values)
+				{
+					prev_generate_local->add( newValueInstance( pstore, prev_generate, o, symbol ) );
+					//prev_generate_local->add( new   PreCodeGenerateIL( "New", "Value", o, symbol ) );
+					//New Value    guttering brightnesses
+				}
+				return prev_generate_local;
+			}
+
+			if (pstore->isKind( symbol ))
+
+			{
+				PreCodeGenerateSession *psess = new   PreCodeGenerateSession( "@init " + symbol );
+				//fazendo um assert em um tipo
+				for (auto o : get_list_and( pstore, value ))
+				{
+					psess->inner->add( new   PreCodeGenerateIL( "Set", "this", o ) );
+				}
+				prev_generate_local->add( psess );
+				return prev_generate_local;
+			}
+
+			return  new PreCodeGenerateDependency( symbol );
+
+
+		
+		}
+
+
+			
 		PreCodeGenerate*  codeGenerate( ParserStore *pstore, PreCodeGenerate* prev_generate, string entryName, TBlockGroupItemNoum vx, TBlockGroupItemNoum vy, TBlockGroupItemNoum vz )
 		{
 			PreCodeGenerate*  prev_generate_local = new  PreCodeGenerateEmpty();
@@ -103,18 +323,8 @@ namespace CInform
 			if (entryName == "assertKindValue")
 			{
 				string insName = (vx.repr());
-				string kind = (vy.repr());
-
-
-				PreCodeGenerate* article_code = nullptr;
-				if (vx.size() > 1)
-				{
-					auto gs = codeGenerateArticle( pstore, prev_generate, vx );
-					insName = gs.entryName;
-					article_code = gs.IL;
-				}
-				pstore->addKind( insName, "value" );
-				return (new   PreCodeGenerateIL( "New", "Kind", insName, "Value" ))->add( article_code );
+				string kind = (vy.repr()); 
+				return create_kind_of( pstore, prev_generate, insName,  ( "value" ) ); 
 			}
 
 
@@ -129,22 +339,16 @@ namespace CInform
 					symbol = removeArticle( pstore, symbol );
 				}
 
-				if (pstore->isSymbol( symbol ) == false)return  new   PreCodeGenerateDependency( symbol );
-
-
+				if (pstore->isSymbol( symbol ) == false) return  new   PreCodeGenerateDependency( symbol ); 
 
 				list<string> o_values = get_list_or( pstore, values );
 				string temp_name = "_pp" + pstore->next_temp() + "_" + symbol;
-				pstore->addKind( temp_name, "value" );
-				prev_generate_local->add( new   PreCodeGenerateIL( "New", "Kind", temp_name, "Value" ) );
-
-
+				pstore->addKind( temp_name, SReference("value") );
+				prev_generate_local->add( new   PreCodeGenerateIL( "New", "Kind", temp_name, "Value" ) ); 
 				for (auto ov : o_values)
 				{
-					prev_generate_local->add( new   PreCodeGenerateIL( "New", "Value", ov, temp_name ) );
-					pstore->addInstance( ov, temp_name );
+					prev_generate_local->add( newValueInstance( pstore, prev_generate, ov, temp_name ) ); 
 				}
-
 				return prev_generate_local->add( new   PreCodeGenerateIL( "Add", "Property", symbol, temp_name, temp_name ) );
 			}
 
@@ -162,60 +366,43 @@ namespace CInform
 				//if (pstore->isSymbol(kind) == false)return  new   PreCodeGenerateDependency(kind);
 
 				PreCodeGenerate* error = nullptr;
-				kind = get_kind_reference( pstore, kind, &error );
+				SReference   rkind = get_kind_reference( pstore, kind, &error );
 				if (error != nullptr) return error;
-
-
-
+							   
 				string named = (vz.repr());
-				return prev_generate_local->add( new   PreCodeGenerateIL( "Add", "Property", symbol, named, kind ) );
+				string internal_name = pstore->mangleg( named );
+
+				auto h =   new   PreCodeGenerateIL( "Add", "Property", symbol, internal_name, rkind.repr()    );
+				if (internal_name != named)
+				{
+					h->add( new   PreCodeGenerateIL( "Set", "Name", internal_name, named ) );
+				}
+				return h;
 			}
 
 			if (entryName == "assertAdjetive")
 			{
 				string symbol = (vx.repr());
 				string value = (vy.repr());
+
+				return createAssertadjetive( pstore, prev_generate, symbol, value );
+
+ 
+
+				return  new PreCodeGenerateDependency( symbol );
+			}
+
+
+			if (entryName == "assertVariable") 
+			{
+			
+				string symbol = (vx.repr());
+				string value = (vy.repr());
 				if (vx.size() > 1) symbol = removeArticle( pstore, symbol );
 
-				if (pstore->isInstance( symbol ))
-				{
-					//fazendo um assert em um tipo
-					for (auto o : get_list_and( pstore, value ))
-					{
-						prev_generate_local->add( new   PreCodeGenerateIL( "Set", symbol, o ) );
-					}
-					return prev_generate_local;
-				}
-
-				if (pstore->isKind( symbol ))
-				{
-					PreCodeGenerateSession *psess = new   PreCodeGenerateSession( "@init " + symbol );
-
-
-
-					//fazendo um assert em um tipo
-					for (auto o : get_list_and( pstore, value ))
-					{
-						psess->inner->add( new   PreCodeGenerateIL( "Set", "this", o ) );
-					}
-
-					prev_generate_local->add( psess );
-
-					return prev_generate_local;
-				}
-
-				if (pstore->isValue( symbol ))
-				{
-					//enum de values ?
-					list<string> o_values = get_list_and( pstore, value );
-					for (auto o : o_values)
-					{
-						prev_generate_local->add( new   PreCodeGenerateIL( "New", "Value", o, symbol ) );
-						//New Value    guttering brightnesses
-					}
-
-					return prev_generate_local;
-				}
+ 
+				return newVariable( pstore, prev_generate, symbol, value );
+			
 			}
 
 

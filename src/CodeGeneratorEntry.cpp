@@ -117,7 +117,7 @@ bool isMuteVariable(string x)
 
 			ArgumentUnify( string _x, string _y ) :x( _x ), y( _y ) 
 			{
-				if (x == "" || y == "")
+				if (x .empty()  || y .empty() )
 				{
 					throw "error ?";
 				}
@@ -153,7 +153,7 @@ bool isMuteVariable(string x)
 		HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
 
 
-		string get_kind_reference(ParserStore *pstore, string vx, PreCodeGenerate** error);
+		SReference get_kind_reference(ParserStore *pstore, string vx, PreCodeGenerate** error);
 
 
 	
@@ -217,8 +217,8 @@ bool isMuteVariable(string x)
 				sel.header =   sufix + "1";
 
 				string akind = nlistToString( k_sel);
-				string kind_ref = get_kind_reference( pstore, akind, error );
-				if (kind_ref == "")
+				auto kind_ref = get_kind_reference( pstore, akind, error );
+				if (kind_ref.empty())
 				{
 					return HeaderPhaseEntry();
 				}
@@ -226,7 +226,7 @@ bool isMuteVariable(string x)
 				string xa = nlistToString( x_sel );
 
 				sel.args.push_back( new SelectorUnify( sufix + "1", xa ) );
-				sel.args.back()->next = new SelectorUnify( xa, kind_ref );
+				sel.args.back()->add( new SelectorUnify( xa, kind_ref ));
 
 				return sel;
 			 
@@ -252,16 +252,17 @@ bool isMuteVariable(string x)
 				sel.header = v_repr + " " + sufix + "1";
 
 				string akind = r.getResult( "K" ).repr();
-				string kind_ref = get_kind_reference( pstore, akind, &error );
-				if (kind_ref == "")
+				SReference kind_ref = get_kind_reference( pstore, akind, &error );
+				if (kind_ref.empty())
 				{ 
-					kind_ref = akind;
+
+					 kind_ref =std::move( SReference(akind));
 				} 
 
 				string xa = r.getResult( "XA" ).repr();
 				
 				sel.args.push_back( new SelectorUnify( sufix + "1", xa ) );
-				sel.args.back()->next = new SelectorUnify( xa, kind_ref ) ;
+				sel.args.back()->add( new SelectorUnify( xa, kind_ref )) ;
 				
 				return sel; 
 			}
@@ -271,7 +272,7 @@ bool isMuteVariable(string x)
 
 
 			auto r = listToActionSelector_nomSelector( pstore, xj, sufix );
-			if (r.header != "") return r;
+			if (r.header .empty() ==false) return r;
 
 
 			return HeaderPhaseEntry();
@@ -292,7 +293,7 @@ bool isMuteVariable(string x)
 			 
 
 					string akind = r.getResult( "K" ).repr();
-					string kind_ref;
+					SReference kind_ref;
 					if (isMuteVariable( akind ) )
 					{
 						kind_ref = akind;
@@ -300,7 +301,7 @@ bool isMuteVariable(string x)
 					else
 					{
 						kind_ref = get_kind_reference( pstore, akind, &error );
-						if (kind_ref == "")
+						if (kind_ref.empty())
 						{
 							error = new   PreCodeGenerateDependency( akind );
 							//continue;
@@ -310,7 +311,7 @@ bool isMuteVariable(string x)
 
 					string xa = r.getResult( "X" ).repr();
 					args.push_back( new SelectorUnify  ( argumentName, xa ) );
-					args.back()->next = new SelectorUnify( xa, kind_ref );
+					args.back()->add( new SelectorUnify( xa, kind_ref ));
 					return args;
 				}
 			}
@@ -390,7 +391,7 @@ bool isMuteVariable(string x)
 						sk->target = "$k_" + pstore->next_temp();
 					}
 					auto s1 = new SelectorUnify( "$", "value_of<" + sk->target +   ">" );				 
-					s1->next = sk;
+					s1->add( sk);
 					return s1;
 				}
 
@@ -419,8 +420,8 @@ bool isMuteVariable(string x)
 
 
 					auto s1 = new SelectorUnify( "$", "relation_of<" + sk->target + ","+ sz->target + ">" );
-					sk->next = sz;
-					s1->next = sk;
+					sk->add(  sz);
+					s1->add(  sk);
 					return s1;
 				}
 
@@ -440,7 +441,7 @@ bool isMuteVariable(string x)
 							sk->target = "$k_"+pstore->next_temp();
 						}
 						auto s1 = new SelectorUnify( "$", "list_of<" + sk->target + ">" );
-						s1->next = sk;
+						s1->add(   sk);
 						 
 						return s1;
 					}
@@ -458,8 +459,8 @@ bool isMuteVariable(string x)
 					if (pstore->isImplicityVar( akind ))
 					{
 						auto s1 = new SelectorUnify( "$", "name_of<" + akind + ">" );
-						auto s2 = new SelectorKind( akind, "kind_of_value" );
-						s1->next = s2;
+						auto s2 = new SelectorKind( akind, SReference("kind_of_value") );
+						s1->add( s2);
 					 
 						return s1;
 					}
@@ -478,7 +479,7 @@ bool isMuteVariable(string x)
 
 						sel->target = "$k_" + pstore->next_temp();
 						auto s1 = new SelectorKind( atarget, sel->target );
-						s1->next = sel;
+						s1->add( sel);
 						return s1;
 					}
 					else
@@ -506,8 +507,8 @@ bool isMuteVariable(string x)
 			}
 
 			{
-				string kind_ref = get_kind_reference( pstore, val, error );
-				if (kind_ref != "")
+				SReference kind_ref = get_kind_reference( pstore, val, error );
+				if (kind_ref.empty() ==false )
 				{
 					*error = nullptr;
 					return new SelectorKind( "$", kind_ref );					 
@@ -525,8 +526,8 @@ bool isMuteVariable(string x)
 			
 			{
 				val = removeArticle(pstore, val );
-				string inst_ref = get_instance_reference( pstore, val, error );
-				if (inst_ref != "")
+				SReference inst_ref = get_instance_reference( pstore, val, error );
+				if (inst_ref .empty() ==false)
 				{
 					*error = nullptr;
 					return new SelectorKind( "$", inst_ref );
@@ -543,7 +544,7 @@ bool isMuteVariable(string x)
 				if (sel->target != "$")
 				{
 					auto sa = new SelectorUnify( avar, sel->target );
-					sa->next = sel;
+					sa->add(sel);
 					return sa;					
 				}
 				else
@@ -566,7 +567,7 @@ bool isMuteVariable(string x)
 				if (sel->target != "$")
 				{
 					auto sa = new SelectorUnify( avar, sel->target );
-					sa->next = sel;
+					sa->add( sel);
 					return sa;
 				}
 				else
@@ -614,16 +615,19 @@ bool isMuteVariable(string x)
 		HeaderPhaseEntry listToComposeNP_2_AB( ParserStore *pstore, list<HNoum> xj, string sufix )
 		{
 			PreCodeGenerate* error = nullptr;
+	
+
 			if (xj.size() == 1)
 			{
-				if (isAuxWord(pstore, nlistToString( xj ) ))
+				string w = nlistToString( xj );
+				if (isAuxWord(pstore, w ))
 				{
-					return HeaderPhaseEntry( nlistToString( xj ) );
+					return HeaderPhaseEntry( w );
 				}
 
-				if ( pstore->isVerb(nlistToString( xj ) ))
+				if ( pstore->isVerb(w ))
 				{
-					return HeaderPhaseEntry( nlistToString( xj ) );
+					return HeaderPhaseEntry( w );
 				}
 			}
 
@@ -640,20 +644,25 @@ bool isMuteVariable(string x)
 				rss = sorteReverseBy( rss, "Z" );
 				for (auto r : rss)
 				{
+					if (r.getResult( "X" ).size() == 0 && r.getResult( "Y" ).size() == 0) continue; //evita recursividade infinita
+
 					auto zz = r.getResult( "Z" );
-					auto hz = listToComposeNP_2_AB( pstore, zz.literals, sufix );
+					
+					auto hz = listToComposeNP_2_AB( pstore, zz.literals, sufix + "2" );
+					
+
 					if (hz.empty()) continue;
 					HeaderPhaseEntry ha ;
 					HeaderPhaseEntry hw;
 
 					if (r.getResult( "X" ).size() > 0)
 					{
-						ha = listToComposeNP_2_AB( pstore, r.getResult( "X" ).literals, sufix );
+						ha = listToComposeNP_2_AB( pstore, r.getResult( "X" ).literals, sufix+"1" );
 						if (ha.empty()) continue;
 					}
 					if (r.getResult( "Y" ).size() > 0)
 					{
-						hw = listToComposeNP_2_AB( pstore, r.getResult( "Y" ).literals, sufix );
+						hw = listToComposeNP_2_AB( pstore, r.getResult( "Y" ).literals, sufix + "3" );
 						if (hw.empty()) continue;
 					}
 
@@ -764,18 +773,18 @@ bool isMuteVariable(string x)
 			{
 
 				string va_repr = r.getResult( "VA" ).repr();
-				string va_name_ref = pstore->getVerbReference( va_repr );
-				if (va_name_ref == "")	va_name_ref = va_repr;
+				SReference va_name_ref = pstore->getVerbReference( va_repr );
+				if (va_name_ref .empty() )	va_name_ref = va_repr;
 
 
 				string vb_repr = r.getResult( "VB" ).repr();
-				string vb_name_ref = pstore->getVerbReference( vb_repr );
-				if (vb_name_ref == "")	vb_name_ref = vb_repr;
+				SReference vb_name_ref = pstore->getVerbReference( vb_repr );
+				if (vb_name_ref .empty() )	vb_name_ref = vb_repr;
 
 
 
 				HeaderPhaseEntry sel;
-				sel.header = va_name_ref + " " + sufix + "1" + " " + vb_name_ref + " " + sufix + "2";
+				sel.header = va_name_ref.repr() + " " + sufix + "1" + " " + vb_name_ref.repr() + " " + sufix + "2";
 
 
 				string za = r.getResult( "ZA" ).repr();
@@ -787,9 +796,9 @@ bool isMuteVariable(string x)
 				list< SelectorItem*> args1 = getArguments( pstore, za, sufix + "1" );
 				if (args1.empty()) continue;
 
-				cout << "    " << va_name_ref << endl;
+				cout << "    " << va_name_ref.repr() << endl;
 				cout << "    " << za << endl;
-				cout << "    " << vb_name_ref << endl;
+				cout << "    " << vb_name_ref.repr() << endl;
 				cout << "    " << zb << endl;
 
 
@@ -1259,8 +1268,8 @@ bool isMuteVariable(string x)
 					k_sel->target = "$k_" + pstore->next_temp();
 
 					sel.args.push_back(new  SelectorUnify( sufix + "1", xa ) );
-					sel.args.back()->next = (new SelectorUnify( xa, k_sel->target ) );
-					sel.args.back()->next->next = k_sel;
+					sel.args.back()->add( new SelectorUnify( xa, k_sel->target ) );
+					sel.args.back()->add( k_sel);
 					
 					return sel;
 			}
@@ -1341,6 +1350,8 @@ bool isMuteVariable(string x)
 
 		list<string> get_list_comma(ParserStore *pstore, string slist)
 		{
+			while (slist.front() == ' ' || slist.front() == ',') slist = slist.substr( 1, slist.size() - 1 );
+			while (slist.back() == ' ' || slist.back() == ',') slist = slist.substr( 0, slist.size() - 1 );
 			replaceAll(slist, ",", " , ");
 			HMatchExpended ah = getPMatchExpended("XA , XB  ", pstore->grammar());
 			std::list<MatchResultStr> rss = MatchThis(slist, ah);
@@ -1361,7 +1372,7 @@ bool isMuteVariable(string x)
 					return list<string>({ h1,h2 });
 				}
 			}
-			return {};
+			return { slist };
 		}
 		list<string> get_list_or(ParserStore *pstore, string slist)
 		{
@@ -1450,8 +1461,8 @@ bool isMuteVariable(string x)
 				for (auto kv : kvs)
 				{
 					auto atype = kv.getResult( "K" ).repr();
-					string subKind = get_kind_reference( pstore, atype, error );
-					if (subKind != "")		return  pstore->mangleg( "kind", subKind );
+					SReference subKind = get_kind_reference( pstore, atype, error );
+					if (subKind .empty() ==false)		return  pstore->mangleg( "kind", subKind );
 				}
 			}
 
@@ -1461,8 +1472,8 @@ bool isMuteVariable(string x)
 				for (auto kv : kvs)
 				{
 					auto atype = kv.getResult( "K" ).repr();
-					string subKind = get_kind_reference( pstore, atype, error );
-					if (subKind != "")	return  pstore->mangleg( "list", subKind );
+					SReference subKind = get_kind_reference( pstore, atype, error );
+					if (subKind .empty() ==false)	return  pstore->mangleg( "list", subKind );
 				}
 			}
 
@@ -1472,8 +1483,8 @@ bool isMuteVariable(string x)
 				for (auto kv : kvs)
 				{
 					auto atype = kv.getResult( "K" ).repr();
-					string subKind = get_kind_reference( pstore, atype, error );
-					if (subKind != "")	return  pstore->mangleg( "value", subKind );
+					SReference subKind = get_kind_reference( pstore, atype, error );
+					if (subKind .empty() ==false)	return  pstore->mangleg( "value", subKind );
 				}
 			}
 
@@ -1482,8 +1493,8 @@ bool isMuteVariable(string x)
 				for (auto kv : kvs)
 				{
 					auto atype = kv.getResult( "K" ).repr();
-					string subKind = get_kind_reference( pstore, atype, error );
-					if (subKind != "")	return  pstore->mangleg( "set", pstore->mangleg( "value", subKind ) );
+					SReference subKind = get_kind_reference( pstore, atype, error );
+					if (subKind .empty() ==false)	return  pstore->mangleg( "set", pstore->mangleg( "value", subKind ) );
 				}
 			}
 
@@ -1494,10 +1505,10 @@ bool isMuteVariable(string x)
 				if (rs.empty() == false)
 				{
 					auto atype = rs.front().bind["X"].repr();
-					string subKind = get_kind_reference(pstore, atype, error);
+					SReference subKind = get_kind_reference(pstore, atype, error);
 
 					if (*error != nullptr) return "";
-					if (subKind != "")	return  pstore->mangleg( "action" , subKind );
+					if (subKind .empty() ==false)	return  pstore->mangleg( "action" , subKind );
 				}
 			}
 
@@ -1507,10 +1518,10 @@ bool isMuteVariable(string x)
 				{
 					auto atype_x = ks.getResult( "X" ).repr();
 					auto atype_y = ks.getResult( "Y" ).repr();
-					string subKind_x = get_kind_reference( pstore, atype_x, error );
-					if (subKind_x == "") continue;
-					string subKind_y = get_kind_reference( pstore, atype_y, error );
-					if (subKind_y == "") continue;
+					SReference subKind_x = get_kind_reference( pstore, atype_x, error );
+					if (subKind_x.empty()) continue;
+					SReference subKind_y = get_kind_reference( pstore, atype_y, error );
+					if (subKind_y.empty()) continue;
 					return pstore->mangleg( "relation", subKind_x, subKind_y );
 				}
 			}
@@ -1524,26 +1535,26 @@ bool isMuteVariable(string x)
 
 
 
-		GenerateEntry codeGenerateArticle(ParserStore *pstore, PreCodeGenerate* prev_generate, TBlockGroupItemNoum vx)
-		{
-			CInform::GrammarContext* gtx = pstore->grammar(); 
-			HMatchExpended ah = getPMatchExpended("?X[a/an/some/the] Y ", gtx);
-			string compound =  (vx.repr());
-			std::list<MatchResultStr> rs =  MatchThis(compound, ah); 
-			if (rs.empty() == false)
-			{
-				auto rem = rs.front().bind["Y"];
-				if (rs.front().hasBind("X"))
-				{
-					auto article = rs.front().bind["X"];
-					auto p_article = new   PreCodeGenerateIL("Set", "Article", rem.literals.front(), article.literals.front());
-					//PreCodeGenerateSession *psess = new   PreCodeGenerateSession("@init " + rem.literals.front());
-					//psess->inner->add(new   PreCodeGenerateIL("Set", "Article", rem.literals.front(), article.literals.front()));
-					return GenerateEntry(rem.repr(), p_article);
-				}
-			} 
-			return GenerateEntry( compound, new  PreCodeGenerateEmpty());
-		}
+		//GenerateEntry codeGenerateArticle(ParserStore *pstore, PreCodeGenerate* prev_generate, TBlockGroupItemNoum vx)
+		//{
+		//	CInform::GrammarContext* gtx = pstore->grammar(); 
+		//	HMatchExpended ah = getPMatchExpended("?X[a/an/some/the] Y ", gtx);
+		//	string compound =  (vx.repr());
+		//	std::list<MatchResultStr> rs =  MatchThis(compound, ah); 
+		//	if (rs.empty() == false)
+		//	{
+		//		auto rem = rs.front().bind["Y"];
+		//		if (rs.front().hasBind("X"))
+		//		{
+		//			auto article = rs.front().bind["X"];
+		//			auto p_article = new   PreCodeGenerateIL("Set", "Article", rem.literals.front(), article.literals.front());
+		//			//PreCodeGenerateSession *psess = new   PreCodeGenerateSession("@init " + rem.literals.front());
+		//			//psess->inner->add(new   PreCodeGenerateIL("Set", "Article", rem.literals.front(), article.literals.front()));
+		//			return GenerateEntry(rem.repr(), p_article);
+		//		}
+		//	} 
+		//	return GenerateEntry( compound, new  PreCodeGenerateEmpty());
+		//}
 
 
 		GenerateEntry codeGenerateArticle( ParserStore *pstore, PreCodeGenerate* prev_generate, string compound )

@@ -1,27 +1,13 @@
-@init brightnesses:
-Set this guttering  
-Set this weak  
-Set this radiant  
-Set this blazing  
-@init object:
-Set this portable  
 code:
-New Kind distance number 
-Set Article distance A 
-New Kind object  
-New Kind _pp104_object Value 
-New Value portable _pp104_object 
-New Value (fixed in place) _pp104_object 
-Add Property object _pp104_object _pp104_object
-New Instance book object 
-Set Article book the 
-Add Property book (number of pages)  number
-New Kind distance number 
-Set Article distance A 
-New Kind _pp105_distance Value 
-New Value far _pp105_distance 
-New Value near _pp105_distance 
-Add Property distance _pp105_distance _pp105_distance
-New Kind number Value 
-Set Article number A 
-New Kind brightnesses Value 
+New Kind rule  
+New Kind cloth  
+New Variable excuse text 
+New Variable What_worked_last_time rule 
+Set Name What_worked_last_time (What worked last time)  
+New Instance T-shirt cloth 
+New Instance jeans cloth 
+New Instance pair_of_shoes cloth 
+Set Name pair_of_shoes (pair of shoes)  
+Set article pair_of_shoes a 
+Add Property cloth the_horizontal_size number
+Set Name the_horizontal_size (the horizontal size)  

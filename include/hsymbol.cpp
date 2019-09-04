@@ -58,4 +58,14 @@ namespace CInform
 		return  name;
 	}
 
+	std::string Variable::getName()
+	{
+		return name;
+	}
+
+	SYMBTYPE Variable::getType()
+	{
+		return  SYMBTYPE::SVAR;
+	}
+
 }

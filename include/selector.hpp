@@ -15,24 +15,27 @@ namespace CInform
 	{
 		class SelectorItem
 		{
+			SelectorItem* _next;
 		public:
 			string target;
-			SelectorItem* next;
-			SelectorItem( string _target ) : target( _target ), next( nullptr ) {}
+			SelectorItem* add( SelectorItem*  next );
+			SelectorItem* next();
+			SelectorItem( string _target ) : target( _target ), _next( nullptr ) {}
 			virtual ~SelectorItem() {}
+			SelectorItem*  operator<< ( SelectorItem*  __next );
 		};
 
 		class SelectorKind : public  SelectorItem
 		{
 		public:
-			string kindRef;
-			SelectorKind( string _target, string _kindRef ) : SelectorItem( _target ), kindRef( _kindRef ) {}
+			SReference kindRef;
+			SelectorKind( string _target, SReference _kindRef ) : SelectorItem( _target ), kindRef( _kindRef ) {}
 		};
 
 		class SelectorInstance :public SelectorItem
 		{
 		public:
-			string instRef;
+			SReference instRef;
 		};
 
 		class SelectorAdjetive :public SelectorItem
@@ -55,6 +58,8 @@ namespace CInform
 		public:
 			string other;
 			SelectorUnify( string _target, string _other ) : SelectorItem( _target ), other( _other ) {}
+			SelectorUnify( string _target, SReference _other ) : SelectorItem( _target ), other( _other.repr() ) {}
+			SelectorUnify( SReference _target, string _other ) : SelectorItem( _target.repr() ), other( _other  ) {}
 		};
 
 
