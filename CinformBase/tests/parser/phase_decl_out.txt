@@ -27,7 +27,8 @@ BEGIN PHASE3 (the fibonacci index of A2221   ) number
   UNIFY $k_108 number  
 END PHASE   
 
-New Kind (open container)  
+New Kind open_container  
+Set Name open_container (open container)  
 BEGIN PHASE1 (slam shut A221  )  
   UNIFY A221 box  
   UNIFY box $k_109  

@@ -1,12 +1,12 @@
 rule is an kind
-cloth is an kind
+vestible cloth is an kind
 An excuse is some text that varies.
 What worked last time is a rule that varies.
 
-T-shirt, jeans, and a pair of shoes are cloth.
+T-shirt, jeans, and a pair of shoes are vestible cloth.
 
 
-An cloth has a number called the horizontal size
+An vestible cloth has a number called the horizontal size
 exit
 
 brightnesses is a kind of value

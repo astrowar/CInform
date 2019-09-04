@@ -1,13 +1,14 @@
 code:
 New Kind rule  
-New Kind cloth  
+New Kind vestible_cloth  
+Set Name vestible_cloth (vestible cloth)  
 New Variable excuse text 
 New Variable What_worked_last_time rule 
 Set Name What_worked_last_time (What worked last time)  
-New Instance T-shirt cloth 
-New Instance jeans cloth 
-New Instance pair_of_shoes cloth 
+New Instance T-shirt vestible_cloth 
+New Instance jeans vestible_cloth 
+New Instance pair_of_shoes vestible_cloth 
 Set Name pair_of_shoes (pair of shoes)  
 Set article pair_of_shoes a 
-Add Property cloth the_horizontal_size number
+Add Property vestible_cloth the_horizontal_size number
 Set Name the_horizontal_size (the horizontal size)  

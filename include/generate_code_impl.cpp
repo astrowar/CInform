@@ -76,9 +76,41 @@ namespace CInform
 			PreCodeGenerate* error = nullptr;
 			auto hasKindnamed = get_kind_reference( pstore, newKindName, &error );
 			if (hasKindnamed.empty() ==false )return new PreCodeGenerateError( "E:Symbolo ja existe:" );
-			//if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe:");
-			pstore->addKind( newKindName, SReference("kind") );
-			return  new  PreCodeGenerateIL( "New", "Kind", newKindName );
+			
+			
+			
+			string  article_str = "";
+			if (newKindName.find( ' ' ) != string::npos)
+			{
+				split_article( pstore, article_str, newKindName );
+			}
+
+
+			{
+				if (pstore->getReference( newKindName ).empty() == false)
+				{
+					cout << "ja existe" << endl;
+					return  new PreCodeGenerateError( "E:Symbolo ja existe: " + newKindName );;
+				}
+			}
+
+			if (pstore->addKind( newKindName, SReference( "kind" ) ))
+			{
+				auto k_ref = pstore->getReference( newKindName );
+				PreCodeGenerate* r = new   PreCodeGenerateIL( "New", "Kind", k_ref.repr() );
+				if (k_ref.repr() != newKindName)       r->add( new  PreCodeGenerateIL( "Set", "Name", k_ref.repr(), newKindName ) );
+				if (article_str.empty() == false)
+				{
+					r->add( new  PreCodeGenerateIL( "Set", "article", k_ref.repr(), article_str ) );
+				}
+				return r;
+			}
+
+
+
+			////if (pstore->isSymbol(newKindName)) return new PreCodeGenerateError("E:Symbolo ja existe:");
+			//pstore->addKind( newKindName, SReference("kind") );
+			//return  new  PreCodeGenerateIL( "New", "Kind", newKindName );
 		}
 
 
@@ -96,7 +128,6 @@ namespace CInform
 			{
 				split_article(pstore, article_str, insName );
 			}
-			
 			 
 
 			{
@@ -111,17 +142,12 @@ namespace CInform
 			if (pstore->addKind( insName, kind ))
 			{
 				auto ins_ref = pstore->getReference( insName );
-
 				PreCodeGenerate* r = new   PreCodeGenerateIL( "New", "Kind", ins_ref.repr() , kind.repr()  );
-
 				if (ins_ref.repr() != insName )       r->add( new  PreCodeGenerateIL( "Set", "Name", ins_ref.repr() , insName ) );
-
 				if (article_str .empty() ==false)
 				{
 					r->add( new  PreCodeGenerateIL( "Set", "article", ins_ref.repr() , article_str ) );
-				}
-
-
+				} 
 				return r;
 			}
 			return nullptr;
@@ -341,15 +367,18 @@ namespace CInform
 
 				if (pstore->isSymbol( symbol ) == false) return  new   PreCodeGenerateDependency( symbol ); 
 
+				auto s_ref = pstore->getReference( symbol );
+
+
 				list<string> o_values = get_list_or( pstore, values );
-				string temp_name = "_pp" + pstore->next_temp() + "_" + symbol;
+				string temp_name = "_pp" + pstore->next_temp() + "_" + s_ref.repr();
 				pstore->addKind( temp_name, SReference("value") );
 				prev_generate_local->add( new   PreCodeGenerateIL( "New", "Kind", temp_name, "Value" ) ); 
 				for (auto ov : o_values)
 				{
 					prev_generate_local->add( newValueInstance( pstore, prev_generate, ov, temp_name ) ); 
 				}
-				return prev_generate_local->add( new   PreCodeGenerateIL( "Add", "Property", symbol, temp_name, temp_name ) );
+				return prev_generate_local->add( new   PreCodeGenerateIL( "Add", "Property", s_ref.repr(), temp_name, temp_name ) );
 			}
 
 			//assertMemberVariable
@@ -363,7 +392,7 @@ namespace CInform
 				if (pstore->isSymbol( symbol ) == false)return  new   PreCodeGenerateDependency( symbol );
 
 				string kind = (vy.repr());
-				//if (pstore->isSymbol(kind) == false)return  new   PreCodeGenerateDependency(kind);
+				if (pstore->isSymbol( symbol ) == false)return  new   PreCodeGenerateDependency(kind);
 
 				PreCodeGenerate* error = nullptr;
 				SReference   rkind = get_kind_reference( pstore, kind, &error );
@@ -372,12 +401,17 @@ namespace CInform
 				string named = (vz.repr());
 				string internal_name = pstore->mangleg( named );
 
-				auto h =   new   PreCodeGenerateIL( "Add", "Property", symbol, internal_name, rkind.repr()    );
-				if (internal_name != named)
+				auto s_ref = pstore->getReference( symbol );
+				if (s_ref.empty() == false)
 				{
-					h->add( new   PreCodeGenerateIL( "Set", "Name", internal_name, named ) );
+					auto h = new   PreCodeGenerateIL( "Add", "Property", s_ref.repr(), internal_name, rkind.repr() );
+					if (internal_name != named)
+					{
+						h->add( new   PreCodeGenerateIL( "Set", "Name", internal_name, named ) );
+					}
+					return h;
 				}
-				return h;
+				return    new   PreCodeGenerateDependency( symbol ); ;
 			}
 
 			if (entryName == "assertAdjetive")
