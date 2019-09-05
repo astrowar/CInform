@@ -17,22 +17,22 @@ namespace CInform
 	namespace CodeParser
 	{
 
-		HeaderPhaseEntry listToActionSelector( ParserStore *pstore, list<HNoum> xj, string sufix  );
+		HeaderPhaseEntry listToActionSelector( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix  );
 
-		HeaderPhaseEntry listToActionSelector_nomSelector( ParserStore *pstore, list<HNoum> xj, string sufix  );
+		HeaderPhaseEntry listToActionSelector_nomSelector( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix  );
 
-		HeaderPhaseEntry listToComposePreposition_3( ParserStore *pstore, list<HNoum> xj, string sufix   );
+		HeaderPhaseEntry listToComposePreposition_3( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix   );
 
-		HeaderPhaseEntry listToComposePreposition_2( ParserStore *pstore, list<HNoum> xj, string sufix   );
+		HeaderPhaseEntry listToComposePreposition_2( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix   );
 
-		HeaderPhaseEntry listToVerbPreposition( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToVerbPreposition( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix, PreCodeGenerate** error );
 
-			HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
-			HeaderPhaseEntry listToNP( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
-			HeaderPhaseEntry listToVerbOnly( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+			HeaderPhaseEntry listToVerbEntry( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix, PreCodeGenerate** error );
+			HeaderPhaseEntry listToNP( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix, PreCodeGenerate** error );
+			HeaderPhaseEntry listToVerbOnly( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix, PreCodeGenerate** error );
 		 
 
-		HeaderPhaseEntry listToArgumentsEntryPatthen_variableSelector( ParserStore *pstore, list<HNoum> xj, string sufix, PreCodeGenerate** error );
+		HeaderPhaseEntry listToArgumentsEntryPatthen_variableSelector( ParserStore *pstore, list<HNoum> xj, SufixGenerator* sufix, PreCodeGenerate** error );
 
 	}
 }

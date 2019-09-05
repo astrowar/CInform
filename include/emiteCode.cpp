@@ -10,6 +10,7 @@ namespace CInform
 {
 	namespace CodeParser
 	{
+		PreCodeGenerate * processSourcePreCodeGenerate( ParserStore * pstore, CInform::Match::TMatch & ematch, SParagraph * code_line, ParserEntryGroup * parserentries );
 		map<string, list<PreCodeGenerate*> > processSource(ParserStore *pstore, SParagraph* code, ParserEntryGroup* parserentries );
 
 		std::list<std::string> emiteInter( ParserStore *pstore, SParagraph* code)
@@ -30,7 +31,9 @@ namespace CInform
 
 
 				parserentries_list.emplace_back( "phaseDeclDecide", getPMatchExpended( " to decide if X is Y ", gtx ) );
+				parserentries_list.emplace_back( "phaseDeclDecide", getPMatchExpended( " X is/are Y if Z", gtx ) );
 				parserentries_list.emplace_back( "phaseDeclwhich", getPMatchExpended( " to decide which/what X is Y ", gtx ) );
+
 				//parserentries_list.emplace_back( "phaseDeclVerb", getPMatchExpended( " to X which  Y ", gtx ) );
 		 
 
@@ -38,6 +41,7 @@ namespace CInform
 				parserentries_list.emplace_back( "assertKindValue", getPMatchExpended( " X is a/an kind of value", gtx ) );
 				parserentries_list.emplace_back( "assertKindOf", getPMatchExpended( " X is/are a/an kind of   Y ", gtx ) );
 				parserentries_list.emplace_back( "assertInstance", getPMatchExpended( " X is/are a/an   Y   ", gtx ) );
+ 
 				parserentries_list.emplace_back( "assertAdjetive", getPMatchExpended( " X is/are Y ", gtx ) );
 
 				//A thing can be fixed in place or portable

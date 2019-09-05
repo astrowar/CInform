@@ -13,8 +13,8 @@ namespace CInform
 
 	namespace CodeParser
 	{
-		std::list<PreCodeGenerateIL*> emiteILCode_i( ParserStore *pstore, SelectorItem  *sel );
-		std::list<PreCodeGenerateIL*> emiteILCode( ParserStore *pstore, SelectorItem  *sel );
+		std::list<PreCodeGenerateIL*> emiteILCode_i( ParserStore *pstore, HSelectorItem sel );
+		std::list<PreCodeGenerateIL*> emiteILCode( ParserStore *pstore, HSelectorItem sel );
 
 	}
 }

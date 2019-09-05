@@ -2,66 +2,78 @@ code:
 New Kind thing  
 New Instance white_abajour thing 
 Set Name white_abajour (white abajour)  
-BEGIN PHASE1 (carry A211 from A2211 to A2221 )  
-  UNIFY A211 white_abajour  
-  UNIFY A2211 M  
-  UNIFY M $k_104  
-  UNIFY $k_104 text  
-  UNIFY A2221 N  
-  UNIFY N $k_105  
-  UNIFY $k_105 text  
+BEGIN PHASE1 (carry A1 from A2 to A3)  
+  UNIFY A1 white_abajour  
+  UNIFY A2 $tmp1180  
+  UNIFY $tmp1180 M  
+  UNIFY M $k_119  
+  UNIFY $k_119 text  
+  UNIFY A3 $tmp1200  
+  UNIFY $tmp1200 N  
+  UNIFY N $k_121  
+  UNIFY $k_121 text  
 END PHASE   
 
-BEGIN PHASE1 (set the background color for A222211 to A222221    )  
-  UNIFY A222211 style  
-  UNIFY style $k_106  
-  UNIFY $k_106 text  
-  UNIFY A222221 N  
-  UNIFY N $k_107  
-  UNIFY $k_107 text  
+BEGIN PHASE1 (set the background color for A1 to A2)  
+  UNIFY A1 $tmp1570  
+  UNIFY $tmp1570 style  
+  UNIFY style $k_158  
+  UNIFY $k_158 text  
+  UNIFY A2 $tmp1590  
+  UNIFY $tmp1590 N  
+  UNIFY N $k_160  
+  UNIFY $k_160 text  
 END PHASE   
 
-BEGIN PHASE3 (the fibonacci index of A2221   ) number 
-  UNIFY A2221 index  
-  UNIFY index $k_108  
-  UNIFY $k_108 number  
+BEGIN PHASE3 (the fibonacci index of A1) number 
+  UNIFY A1 $tmp1740  
+  UNIFY $tmp1740 index  
+  UNIFY index $k_175  
+  UNIFY $k_175 number  
 END PHASE   
 
 New Kind open_container  
 Set Name open_container (open container)  
-BEGIN PHASE1 (slam shut A221  )  
-  UNIFY A221 box  
-  UNIFY box $k_109  
-  UNIFY $k_109 open_container  
+BEGIN PHASE1 (slam shut A1)  
+  UNIFY A1 $tmp1800  
+  UNIFY $tmp1800 box  
+  UNIFY box $k_181  
+  UNIFY $k_181 open_container  
 END PHASE   
 
-BEGIN PHASE3 (list of A2211 to which/whom A2222211 relates by A22222221       ) ((list of Ls))  
-  UNIFY A2211 name_of<L>  
+BEGIN PHASE3 (list of A7 to which/whom A6 relates by A5) ((list of Ls))  
+  UNIFY A7 $tmp2640  
+  UNIFY $tmp2640 name_of<L>  
   UNIFY L kind_of_value  
-  UNIFY A2222211 X  
-  UNIFY X $k_115  
-  UNIFY $k_115 K  
-  UNIFY A22222221 R  
-  UNIFY R $k_114  
-  UNIFY $k_114 relation_of<$k_112,$k_113>  
-  UNIFY $k_112 value_of<$k_111>  
-  UNIFY $k_111 K  
-  UNIFY $k_113 Ls  
+  UNIFY A6 $tmp2620  
+  UNIFY $tmp2620 X  
+  UNIFY X $k_263  
+  UNIFY $k_263 K  
+  UNIFY A5 $tmp2570  
+  UNIFY $tmp2570 R  
+  UNIFY R $k_261  
+  UNIFY $k_261 relation_of<$k_259,$k_260>  
+  UNIFY $k_259 value_of<$k_258>  
+  UNIFY $k_258 K  
+  UNIFY $k_260 Ls  
 END PHASE   
 
-BEGIN PHASE1 (hunt for A211 in A221 )  
-  UNIFY A211 needle  
-  UNIFY needle $k_117  
-  UNIFY $k_117 value_of<$k_116>  
-  UNIFY $k_116 K  
-  UNIFY A221 haystack  
-  UNIFY haystack $k_119  
-  UNIFY $k_119 list_of<$k_118>  
-  UNIFY $k_118 Ks  
+BEGIN PHASE1 (hunt for A1 in A2)  
+  UNIFY A1 $tmp2760  
+  UNIFY $tmp2760 needle  
+  UNIFY needle $k_278  
+  UNIFY $k_278 value_of<$k_277>  
+  UNIFY $k_277 K  
+  UNIFY A2 $tmp2790  
+  UNIFY $tmp2790 haystack  
+  UNIFY haystack $k_281  
+  UNIFY $k_281 list_of<$k_280>  
+  UNIFY $k_280 Ks  
 END PHASE   
 
-BEGIN PHASE1 (concatenate A21 )  
-  UNIFY A21 name_of<K>  
+BEGIN PHASE1 (concatenate A1)  
+  UNIFY A1 $tmp2840  
+  UNIFY $tmp2840 name_of<K>  
   UNIFY K kind_of_value  
 END PHASE   
 

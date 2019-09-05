@@ -1,3 +1,21 @@
+
+brightnesses is a kind of value.It is usually weak.
+The brightnesses are (ultra strong) ,guttering, weak, radiant and blazing
+
+thing is a kind
+white abajour is an thing
+white abajour is radiant if it  is on
+ 
+exit
+brightnesses is a kind of value.It is usually weak.
+The brightnesses are (ultra strong) ,guttering, weak, radiant and blazing
+A float is a kind of value
+A float has a number called precision.It is usually 6.
+
+
+
+exit
+
 rule is an kind
 vestible cloth is an kind
 An excuse is some text that varies.
@@ -7,12 +25,10 @@ T-shirt, jeans, and a pair of shoes are vestible cloth.
 
 
 An vestible cloth has a number called the horizontal size
-exit
 
-brightnesses is a kind of value
-The brightnesses are (ultra strong) ,guttering, weak, radiant and blazing
  
-
+ 
+exit
 A distance is a kind of number 
  
 object is an kind
@@ -27,5 +43,5 @@ the book has a number called number of pages
 A distance can be far or near.
 
 A float is a kind of value
-
+A float has a number called precision
  

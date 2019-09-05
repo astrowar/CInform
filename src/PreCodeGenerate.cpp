@@ -156,7 +156,7 @@ namespace CInform
 				{   std::list<std::string> args;
 					string base = x.substr( 0, i );
 					int  p = 0;
-					int pivot = i+1;
+					size_t pivot = i+1;
 					for (size_t j = i + 1; j < n - 1; ++j)
 					{
 						if (x[j] == '<') p++;
@@ -208,6 +208,21 @@ namespace CInform
 
 		}
 
+		bool ParserStore::isPropertyOf( std::string prop_arroba_obj, SReference & obj, SReference & internal_prop_name )
+		{
+			auto i = prop_arroba_obj.find( "@" );
+			if (i != string::npos)
+			{
+				obj = getReference( prop_arroba_obj.substr( i + 1, prop_arroba_obj.size() - i - 1 ) );
+				if (obj.empty()==false   ) 
+				{
+					internal_prop_name = getReference( prop_arroba_obj.substr( 0, i ));
+					return true;
+				}
+			}
+			return false;
+		}
+
 
 		bool ParserStore::isVerb( std::string x )
 		{
@@ -228,11 +243,14 @@ namespace CInform
 			{
 				SReference xx = e.getReference(name);
 
-				if (!xx.empty() ) return xx;
+				if (!xx.empty())
+				{
+					return xx;
+				}
 			}
 
 			//eh um tipo composto ?
-			if (name.find( "<" ))
+			if (name.find( "<" ) != string::npos)
 			{
 				auto ls = demangleg_compose( name );
 				if (ls.size() < 2)
@@ -258,6 +276,26 @@ namespace CInform
 				
 				return 	SReference(this->mangleg( ref_base.repr() , ref_sub1.repr() , ref_sub2.repr() ));
 
+			}
+
+
+
+			//eh uma property ?
+			if (name.find( "@" ) != string::npos)
+			{
+				auto i = name.find( "@" );
+				//auto hprop = getReference( name.substr( 0, i ) );
+				auto hobj = getReference( name.substr( i+1, name.size()-i-1 ) );
+				if (hobj.empty() == false)
+				{
+					auto hprop = getReference( name.substr( 0, i ) );
+					return SReference(hprop.repr()+"@"+hobj.repr());
+				}
+			}
+
+			{
+				string tmp = "";
+				if (getLocalVar( name, tmp )) return getReference( tmp );
 			}
 
 			return SReference();
@@ -299,9 +337,15 @@ namespace CInform
 		bool ParserStore::isSymbol(string name)
 		{
 			if (isSameNoum(name, "value")) return true;
+
+
 			for (auto &e : symbol_stack)
 			{
 				if (e.isSymbol(name)) return true;
+			}
+			{
+				string tmp;
+				if (this->getLocalVar( name, tmp )) return isSymbol( tmp );
 			}
 			return false;
 		}
@@ -359,6 +403,25 @@ namespace CInform
 			return true;
 		}
 
+		bool ParserStore::addProperty( SReference objectReceiver, std::string prop_name, SReference prop_kind )
+		{
+			 
+			if (prop_kind.empty())
+			{
+				throw "missing kind definition";
+			}
+			if (prop_name.find( '(' ) != string::npos)
+			{
+				throw "prop name name error";
+			}
+			 
+			auto ref = SReference( this->mangleg( prop_name )  );
+
+			CInform::KindProperty *gvar = new CInform::KindProperty( ref, prop_kind, prop_name );
+			symbol_stack.front().addSymbol( gvar );
+			return true; 
+		}
+
 		bool ParserStore::addGlobalVariable( std::string name, SReference kindbase )
 		{
 			auto k = (kindbase);
@@ -383,6 +446,35 @@ namespace CInform
 			this->symbol_stack.front().addSymbol(s);
 			return true;
 			
+		}
+
+		bool ParserStore::setLocalVar( string var, string value )
+		{
+			string tmp;
+			for (auto &e : symbol_stack)
+			{
+				if (e.getLocalVar(var,tmp ) )
+				{
+					e.setLocalVar( var, value );
+					return true;
+				}
+			}
+			symbol_stack.front().setLocalVar( var, value );
+			return true;
+		}
+
+		bool ParserStore::getLocalVar( string var, string & value )
+		{
+			string tmp;
+			for (auto &e : symbol_stack)
+			{
+				if (e.getLocalVar( var, tmp ))
+				{
+					value = tmp;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		std::string ParserStore::mangleg( std::string x )
@@ -524,6 +616,33 @@ namespace CInform
 			return {};
 		}
 
+		bool ParserStoreSymbolList::setLocalVar( std::string name, std::string value )
+		{
+			for (auto &v : locals)
+			{
+				if (isSameNoum( v.first, name ))
+				{
+					v.second = value;
+					return true;
+				}
+			}
+			locals.push_back( make_pair( name,value ) );
+			return true;
+		}
+
+		bool ParserStoreSymbolList::getLocalVar( std::string name, std::string & value )
+		{
+			for (auto &v : locals)
+			{
+				if (isSameNoum( v.first, name ))				 
+				{
+					value = v.second;
+					return true;
+				}
+			}
+			return false;
+		}
+
 		void ParserStoreSymbolList::addSymbol( Symbol * s )
 		{
 			cout << "add Symbol " << s->getName() << endl;
@@ -581,7 +700,7 @@ namespace CInform
 		}
 		 PreCodeGenerateSession::PreCodeGenerateSession(string _name) :session(_name), inner(nullptr) 
 		{
-			 inner = new  PreCodeGenerateEmpty();
+			 inner = createPreCodeGenerateEmpty();
 		}
 
 		   std::string PreCodeGenerateBlock::repr() { return ""; }
@@ -589,7 +708,7 @@ namespace CInform
 		 PreCodeGenerateBlock::PreCodeGenerateBlock(PreCodeGenerate *_header)
 		 {
 			 header = _header;
-			 inner = new  PreCodeGenerateEmpty();
+			 inner = createPreCodeGenerateEmpty();
 		 }
 
 

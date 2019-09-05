@@ -6,6 +6,8 @@
 #include "PreCodeGenerate.hpp"
 #include "NSource.hpp"
 #include <cctype>
+#include <memory>
+
 using namespace std;
 
 namespace CInform
@@ -13,16 +15,20 @@ namespace CInform
 
 	namespace CodeParser
 	{
+
+		class SelectorItem;
+		using HSelectorItem = std::shared_ptr<SelectorItem>;
+
 		class SelectorItem
 		{
-			SelectorItem* _next;
+			HSelectorItem _next;
 		public:
 			string target;
-			SelectorItem* add( SelectorItem*  next );
-			SelectorItem* next();
+			SelectorItem* add( HSelectorItem  next );
+			HSelectorItem next();
 			SelectorItem( string _target ) : target( _target ), _next( nullptr ) {}
 			virtual ~SelectorItem() {}
-			SelectorItem*  operator<< ( SelectorItem*  __next );
+		 
 		};
 
 		class SelectorKind : public  SelectorItem
@@ -48,9 +54,9 @@ namespace CInform
 		class SelectorOr :public SelectorItem
 		{
 		public:
-			SelectorItem* sel1;
-			SelectorItem* sel2;
-			SelectorOr( string _target, SelectorItem* _sel1, SelectorItem* _sel2 ) : SelectorItem( _target ), sel1( _sel1 ), sel2( _sel2 ) {}
+			HSelectorItem sel1;
+			HSelectorItem sel2;
+			SelectorOr( string _target, HSelectorItem _sel1, HSelectorItem _sel2 ) : SelectorItem( _target ), sel1( _sel1 ), sel2( _sel2 ) {}
 		};
 
 		class SelectorUnify :public SelectorItem

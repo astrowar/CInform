@@ -1,14 +1,18 @@
+@init brightnesses:
+Set this weak  
 code:
-New Kind rule  
-New Kind vestible_cloth  
-Set Name vestible_cloth (vestible cloth)  
-New Variable excuse text 
-New Variable What_worked_last_time rule 
-Set Name What_worked_last_time (What worked last time)  
-New Instance T-shirt vestible_cloth 
-New Instance jeans vestible_cloth 
-New Instance pair_of_shoes vestible_cloth 
-Set Name pair_of_shoes (pair of shoes)  
-Set article pair_of_shoes a 
-Add Property vestible_cloth the_horizontal_size number
-Set Name the_horizontal_size (the horizontal size)  
+New Kind brightnesses value 
+New Value ultra_strong brightnesses 
+Set name ultra_strong (ultra strong)  
+New Value guttering brightnesses 
+New Value weak brightnesses 
+New Value radiant brightnesses 
+New Value blazing brightnesses 
+New Kind thing  
+New Instance white_abajour thing 
+Set Name white_abajour (white abajour)  
+BEGIN PHASE4 (A1 is B1) BOOL 
+  UNIFY A1 white_abajour  
+  UNIFY B1 radiant  
+END PHASE   
+

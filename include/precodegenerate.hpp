@@ -25,6 +25,7 @@ namespace CInform
 
 		class ParserStoreSymbolList
 		{
+			std::list<std::pair<std::string, std::string>> locals;
 			std::list<Symbol*> symbols;
 		public:
 			void addSymbol(Symbol* s); 
@@ -37,6 +38,9 @@ namespace CInform
 			SReference getReference(std::string name);
 			SReference getKindOf( std::string name );
 			SReference getKindOf( SReference aref );
+
+			bool setLocalVar( std::string name, std::string value );
+			bool getLocalVar( std::string name, std::string &value );
 		};
 
 
@@ -71,10 +75,14 @@ namespace CInform
 			bool addVerb( string name );
 			bool addKind(std::string name, SReference kindbase);
 			bool addInstance(std::string name, SReference kindbase);
+			bool addProperty( SReference objectReceiver, std::string prop_name, SReference prop_kind );
 
 			bool addGlobalVariable( std::string name, SReference kindbase );
 
 			bool add( Symbol *s );
+
+			bool setLocalVar( string var ,string value);
+			bool getLocalVar( string var, string &value );
 
 			std::string mangleg( std::string x );
 			//std::string mangleg( std::string x, std::string sub );
@@ -91,6 +99,9 @@ namespace CInform
 			bool isPreposition( std::string x);
 			bool isVerb( std::string x );
 			bool isPronoum( std::string x );
+
+
+			bool isPropertyOf( std::string prop_arroba_obj, SReference  &obj, SReference &internal_prop_name );
 			 
 		};
 
@@ -133,6 +144,8 @@ namespace CInform
 			PreCodeGenerateEmpty( );
 			virtual std::string repr();
 		};
+
+	 
 	 
 		class PreCodeGenerateSession : public PreCodeGenerate
 		{
@@ -172,6 +185,17 @@ namespace CInform
 			virtual std::string repr();
 		};
 
+		PreCodeGenerateError* createPreCodeGenerateError( std::string _errorMessage );
+		PreCodeGenerateEmpty * createPreCodeGenerateEmpty();
+
+		PreCodeGenerateIL* createPreCodeGenerateIL( std::string _verb, std::string _noum, std::string _x, std::string _y, std::string _z );
+		PreCodeGenerateIL* createPreCodeGenerateIL( std::string _verb, std::string _noum, std::string _x, std::string _y  );
+		PreCodeGenerateIL* createPreCodeGenerateIL( std::string _verb, std::string _noum, std::string _x  ); 
+
+		PreCodeGenerateSession* createPreCodeGenerateSession( string _name );
+		PreCodeGenerateBlock* createPreCodeGenerateBlock( PreCodeGenerate *_header );
+
+		PreCodeGenerateDependency* createPreCodeGenerateDependency( std::string requiredSymbol );
 
 		class GenerateEntry
 		{

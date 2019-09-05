@@ -6,7 +6,7 @@ namespace CInform
 	namespace CodeParser
 	{
 
-		SelectorItem *  SelectorItem::add( SelectorItem * __next )
+		SelectorItem*  SelectorItem::add( HSelectorItem __next )
 		{
 			if (this->_next != nullptr)
 			{
@@ -20,15 +20,12 @@ namespace CInform
 
 		}
 
-		SelectorItem * SelectorItem::next()
+		HSelectorItem SelectorItem::next()
 		{
 			return this->_next;
 		}
 
-		SelectorItem * SelectorItem::operator<<( SelectorItem * __next )
-		{
-			return this->add( __next );
-		}
+		 
 
 	}
 }

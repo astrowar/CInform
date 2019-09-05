@@ -31,7 +31,7 @@ namespace CInform
 			HeaderPhaseEntry(  )  {}
 			HeaderPhaseEntry(string _header ):header( _header){}
 			string header;
-			list<SelectorItem* > args;
+			list<HSelectorItem > args;
 			bool empty() { return header.empty() && args.empty(); }
 			HeaderPhaseEntry	operator+( const HeaderPhaseEntry  & other );
 
@@ -43,6 +43,20 @@ namespace CInform
 		public:
 			string header;
 			list<pair<string, string> > var_selector;
+		};
+
+
+		class SufixGenerator
+		{
+			std::string base;
+			int i = 1;
+		public:
+			SufixGenerator( std::string _base ):base(_base) {}
+			SufixGenerator( std::string _base ,int _i) :base( _base ),i(_i) {}
+			string next_var() {
+				return base + std::to_string( i++ ); 				
+			 
+			 }
 		};
 	}
 }

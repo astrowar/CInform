@@ -11,7 +11,7 @@ namespace CInform
 {
 	//simbolo é a representação em palavras de um tipo do CInform
 
-	enum  SYMBTYPE { SKIND, SVALUE, SINSTANCE, SVAR ,SRELATION, SVERB  };
+	enum  SYMBTYPE { SKIND, SVALUE, SINSTANCE, SVAR ,SRELATION, SVERB , SKINDVAR };
 
 	class Symbol
 	{
@@ -60,12 +60,8 @@ namespace CInform
 	public:
 		std::string name;
 		SReference baseKind;
-		Instance( SReference  _ref, SReference _baseKind ,  std::string  _name) :Symbol( _ref  ), baseKind( _baseKind ), name( _name ) {}
-
-		
-		virtual std::string getName() override;
-
-		
+		Instance( SReference  _ref, SReference _baseKind ,  std::string  _name) :Symbol( _ref  ), baseKind( _baseKind ), name( _name ) {} 
+		virtual std::string getName() override; 
 		virtual SYMBTYPE getType() override;
 	};
 
@@ -141,14 +137,22 @@ namespace CInform
 		std::string name;
 		SReference valuekind;
 		Variable( SReference  _ref,SReference _valuekind, std::string _name   ) :Symbol( _ref ), name( _name ), valuekind( _valuekind ) { }
-
 		// Herdado por meio de Symbol
 		virtual std::string getName() override;
 		virtual SYMBTYPE getType() override;
 	};
 
 	
- 
+	class KindProperty : public Symbol
+	{
+	public:
+		std::string name;
+		SReference valuekind;
+		KindProperty( SReference  _ref, SReference _valuekind, std::string _name ) :Symbol( _ref ), name( _name ), valuekind( _valuekind ) { }
+		// Herdado por meio de Symbol
+		virtual std::string getName() override;
+		virtual SYMBTYPE getType() override;
+	};
 
 }
 #endif

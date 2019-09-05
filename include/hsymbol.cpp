@@ -68,4 +68,16 @@ namespace CInform
 		return  SYMBTYPE::SVAR;
 	}
 
+
+
+	std::string KindProperty::getName()
+	{
+		return name;
+	}
+
+	SYMBTYPE KindProperty::getType()
+	{
+		return  SYMBTYPE::SKINDVAR;
+	}
+
 }

@@ -77,7 +77,7 @@ namespace CInform
 			if (*error != nullptr) return {};
 			if (kindref .empty() ==false) 	return kindref;
 
-			*error = new   PreCodeGenerateDependency( kindname );
+			*error = createPreCodeGenerateDependency( kindname );
 			return {};
 
 		}
@@ -89,7 +89,7 @@ namespace CInform
 			if (vname.empty()==false) return vname;
 
 			//raise some error
-			*error = new   PreCodeGenerateDependency( verb );
+			*error = createPreCodeGenerateDependency( verb );
 			return {};
 		}
 

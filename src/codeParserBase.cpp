@@ -33,7 +33,7 @@ namespace CInform
 		}
 		
 		PreCodeGenerate* processSourcePreCodeGenerateTerm(ParserStore *pstore, PreCodeGenerate* prev_generate, CInform::Match::TMatch&   ematch,
-			list<CInform::Match::HNoum >& hs, pair<string, HMatch> parserentry)
+			list<CInform::Match::HNoum >& hs, pair<string, HMatch> parserentry )
 		{
 			PreCodeGenerate* lastError = nullptr;
 			list< MatchResult >  mList = ematch.MatchLine(hs, parserentry.second);
@@ -41,7 +41,7 @@ namespace CInform
 			{
 				for (auto& mm : mList)
 				{
-					if (lastError ==nullptr) lastError = new PreCodeGenerateError( "Syntax Error" );
+					if (lastError ==nullptr) lastError = createPreCodeGenerateError( "Syntax Error" );
 					//cout << mm.repr();
 					//cout << endl;
 					//cout << "M:" << parserentry.entryName << " -> ";
@@ -50,7 +50,7 @@ namespace CInform
 					TBlockGroupItemNoum vy = mm.getResult("Y");
 					TBlockGroupItemNoum vz = mm.getResult("Z");
 
-					PreCodeGenerate* codeGen = codeGenerate(pstore, prev_generate, parserentry.first, vx, vy,vz);
+					PreCodeGenerate* codeGen = codeGenerate(pstore, prev_generate, parserentry.first, vx, vy,vz );
 					codeGen = Higienyze(codeGen);
 
 					if (codeGen == nullptr)
@@ -74,7 +74,7 @@ namespace CInform
 			return lastError;
 		}
 
-		PreCodeGenerate* processSourcePreCodeGeneratePeriod(HSourceBlock line, PreCodeGenerate* prev_generate ,ParserStore *pstore, CInform::Match::TMatch&   ematch, ParserEntryGroup* parserentries)
+		PreCodeGenerate* processSourcePreCodeGeneratePeriod(HSourceBlock line, PreCodeGenerate* prev_generate ,ParserStore *pstore, CInform::Match::TMatch&   ematch, ParserEntryGroup* parserentries )
 		{
 			list<CInform::HSourceBlock> xs = CInform::Match::split_code(line, ' ');
 			list<CInform::Match::HNoum > hs;
@@ -88,7 +88,7 @@ namespace CInform
 			for (auto kv : parserentries->entryName_patten)
 			{
 
-				PreCodeGenerate* codeGen = processSourcePreCodeGenerateTerm(pstore, prev_generate, ematch, hs, kv);
+				PreCodeGenerate* codeGen = processSourcePreCodeGenerateTerm(pstore, prev_generate, ematch, hs, kv );
 							   
 				 
 				if (codeGen == nullptr)  continue;
@@ -119,20 +119,23 @@ namespace CInform
 
 		PreCodeGenerate* processSourcePreCodeGenerate(ParserStore *pstore, CInform::Match::TMatch&   ematch, SParagraph* code_line, ParserEntryGroup* parserentries)
 		{
+			PreCodeGenerate* head = nullptr;
 			PreCodeGenerate* generate = nullptr;
 			PreCodeGenerate* prev_generate = nullptr;
 	  
+			string it_reference = "";
+			pstore->setLocalVar( "it", "" );
 
 			for (HSourceBlock period : code_line->periods)
 			{
 	  
-				PreCodeGenerate* this_generate = processSourcePreCodeGeneratePeriod(period, prev_generate, pstore,  ematch, parserentries);
+				PreCodeGenerate* this_generate = processSourcePreCodeGeneratePeriod(period, prev_generate, pstore,  ematch, parserentries );
 
 
 				if (this_generate == nullptr)
 				{  
 					
-					return new PreCodeGenerateError("syntax error: "+ getRepr( period));
+					return createPreCodeGenerateError("syntax error: "+ getRepr( period));
 				} 
 				//this_generate != null
 		 
@@ -159,8 +162,20 @@ namespace CInform
 					{
 						prev_generate = this_generate;
 					} 
+
+
+					if (head == nullptr)
+					{
+						head = this_generate;
+					}
+					else
+					{
+						head->add( this_generate );
+					}
+
+
 			}
-			return generate;
+			return head;
 		}
 	 
 		 
@@ -218,7 +233,7 @@ namespace CInform
 			{
 				if (dependecy_cicle_loop > 10)
 				{
-					add_code("",sessions,"error", new PreCodeGenerateError("ciclic dependecy"));
+					add_code("",sessions,"error", createPreCodeGenerateError("ciclic dependecy"));
 					break;
 				}
 				bool useDelayed_code = false;
@@ -287,7 +302,7 @@ namespace CInform
 
 			for (auto d : delayed)
 			{
-				add_code("",sessions, "error", new   PreCodeGenerateDependency(d.symbol));
+				add_code("",sessions, "error", createPreCodeGenerateDependency(d.symbol));
 		 
 			}
 
