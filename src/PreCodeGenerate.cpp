@@ -64,6 +64,7 @@ namespace CInform
 		}
 		ParserStore::ParserStore(GrammarContext * gtx) :_grammar(gtx)
 		{
+			this->codeTree = new CodeTree::SourceControl();
 			this->push_state();
 		}
 		GrammarContext * ParserStore::grammar()

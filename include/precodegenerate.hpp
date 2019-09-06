@@ -8,6 +8,8 @@
 
 #include "hsymbol.hpp"
  
+#include "createCodeTree.hpp"
+
 
 namespace CInform
 {
@@ -15,11 +17,6 @@ namespace CInform
 	namespace CodeParser
 	{
 		bool isSameNoum(std::string a, std::string b);
-
-
-		
-	
-
 
 		 
 
@@ -50,11 +47,11 @@ namespace CInform
 			GrammarContext *_grammar;
 			std::list<ParserStoreSymbolList>	symbol_stack;
 
-		 
-
+			 
 		public:
 			ParserStore(GrammarContext *gtx);
 			GrammarContext * grammar();
+			CodeTree::SourceControl *codeTree;
 
 			void push_state();
 			std::string next_temp();
@@ -73,7 +70,10 @@ namespace CInform
 
 			bool isSymbol(std::string name);
 			bool addVerb( string name );
-			bool addKind(std::string name, SReference kindbase);
+
+
+			bool addKind( string name, SReference kindbase );
+
 			bool addInstance(std::string name, SReference kindbase);
 			bool addProperty( SReference objectReceiver, std::string prop_name, SReference prop_kind );
 

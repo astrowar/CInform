@@ -75,6 +75,12 @@
     <ClInclude Include="..\include\sreference.hpp">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\CodeTree.hpp">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\createCodeTree.hpp">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -144,6 +150,9 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="..\include\selector.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\createCodeTree.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

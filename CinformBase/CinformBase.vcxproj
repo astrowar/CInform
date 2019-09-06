@@ -158,7 +158,9 @@
   <ItemGroup>
     <ClInclude Include="..\include\cinform.hpp" />
     <ClInclude Include="..\include\CodeParser.hpp" />
+    <ClInclude Include="..\include\CodeTree.hpp" />
     <ClInclude Include="..\include\componentesSelector.hpp" />
+    <ClInclude Include="..\include\createCodeTree.hpp" />
     <ClInclude Include="..\include\emiteIL.hpp" />
     <ClInclude Include="..\include\Grammar.hpp" />
     <ClInclude Include="..\include\headerPhase.hpp" />
@@ -188,6 +190,7 @@
     <ClCompile Include="..\src\CodeParser.cpp" />
     <ClCompile Include="..\src\codeParserBase.cpp" />
     <ClCompile Include="..\src\combinatoria.cpp" />
+    <ClCompile Include="..\src\createCodeTree.cpp" />
     <ClCompile Include="..\src\emiteIL.cpp" />
     <ClCompile Include="..\src\getReferences.cpp" />
     <ClCompile Include="..\src\grammar.cpp" />

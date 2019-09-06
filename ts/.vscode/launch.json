@@ -1,0 +1,13 @@
+{​
+    "version": "0.2.0",​
+    "configurations": [​
+      {​
+        "name": "Debug teste.ts",​
+        "type": "node",​
+        "request": "launch",​
+        "cwd": "${workspaceRoot}",​
+        "runtimeArgs": [ ],​
+        "args": ["${workspaceRoot}/teste.ts"]​
+      }​
+    ]​
+  }

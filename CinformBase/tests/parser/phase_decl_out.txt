@@ -14,67 +14,17 @@ BEGIN PHASE1 (carry A1 from A2 to A3)
   UNIFY $k_121 text  
 END PHASE   
 
-BEGIN PHASE1 (set the background color for A1 to A2)  
-  UNIFY A1 $tmp1570  
-  UNIFY $tmp1570 style  
-  UNIFY style $k_158  
-  UNIFY $k_158 text  
-  UNIFY A2 $tmp1590  
-  UNIFY $tmp1590 N  
-  UNIFY N $k_160  
-  UNIFY $k_160 text  
+BEGIN PHASE1 (sort A5 in P A4 phrase A2 to A3 order)  
+  UNIFY A5 $tmp1560  
+  UNIFY $tmp1560 L  
+  UNIFY L $k_158  
+  UNIFY $k_158 list_of<$k_157>  
+  UNIFY $k_157 K  
+  UNIFY A4 $tmp1550  
+  UNIFY $tmp1550 -  
+  UNIFY A2 $tmp1530  
+  UNIFY $tmp1530 K  
+  UNIFY A3 $tmp1540  
+  UNIFY $tmp1540 number  
 END PHASE   
 
-BEGIN PHASE3 (the fibonacci index of A1) number 
-  UNIFY A1 $tmp1740  
-  UNIFY $tmp1740 index  
-  UNIFY index $k_175  
-  UNIFY $k_175 number  
-END PHASE   
-
-New Kind open_container  
-Set Name open_container (open container)  
-BEGIN PHASE1 (slam shut A1)  
-  UNIFY A1 $tmp1800  
-  UNIFY $tmp1800 box  
-  UNIFY box $k_181  
-  UNIFY $k_181 open_container  
-END PHASE   
-
-BEGIN PHASE3 (list of A7 to which/whom A6 relates by A5) ((list of Ls))  
-  UNIFY A7 $tmp2640  
-  UNIFY $tmp2640 name_of<L>  
-  UNIFY L kind_of_value  
-  UNIFY A6 $tmp2620  
-  UNIFY $tmp2620 X  
-  UNIFY X $k_263  
-  UNIFY $k_263 K  
-  UNIFY A5 $tmp2570  
-  UNIFY $tmp2570 R  
-  UNIFY R $k_261  
-  UNIFY $k_261 relation_of<$k_259,$k_260>  
-  UNIFY $k_259 value_of<$k_258>  
-  UNIFY $k_258 K  
-  UNIFY $k_260 Ls  
-END PHASE   
-
-BEGIN PHASE1 (hunt for A1 in A2)  
-  UNIFY A1 $tmp2760  
-  UNIFY $tmp2760 needle  
-  UNIFY needle $k_278  
-  UNIFY $k_278 value_of<$k_277>  
-  UNIFY $k_277 K  
-  UNIFY A2 $tmp2790  
-  UNIFY $tmp2790 haystack  
-  UNIFY haystack $k_281  
-  UNIFY $k_281 list_of<$k_280>  
-  UNIFY $k_280 Ks  
-END PHASE   
-
-BEGIN PHASE1 (concatenate A1)  
-  UNIFY A1 $tmp2840  
-  UNIFY $tmp2840 name_of<K>  
-  UNIFY K kind_of_value  
-END PHASE   
-
-ERRO: E:Symbolo ja existe: thing

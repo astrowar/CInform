@@ -12,6 +12,7 @@ namespace CInform
 	using namespace Match;
 	namespace CodeParser
 	{
+		PreCodeGenerate * create_kind( ParserStore * pstore, PreCodeGenerate * prev_generate, string newKindName );
 
 		bool cleanNoum( string &x )
 		{
@@ -98,6 +99,25 @@ namespace CInform
 					return  createPreCodeGenerateError( "E:Symbolo ja existe: " + newKindName );;
 				}
 			}
+
+ 	
+
+			{
+				auto ct = pstore->codeTree;
+				auto cc = ct->getType( newKindName );
+				if (cc == nullptr)
+				{					
+					auto heritage = ct->createHeritageClause( { ct->createExpressionWithTypeArguments( ct->createIdentifier( "Kind" ), nullptr ) } );
+					auto ccdecl =   ct->createClassDeclaration( ct->createIdentifier( newKindName ), heritage ) ; 
+					if (article_str.empty() == false)
+					{
+						auto pp = ct->createProperty( ct->createIdentifier( "article" ), ct->createTypeReferenceNode( ct->createIdentifier( "text" ) ), ct->createStringLiteral( article_str ) ) ;
+						ccdecl->members.push_back(  pp );
+					}
+				}
+			}
+
+
 
 			if (pstore->addKind( newKindName, SReference( "kind" ) ))
 			{

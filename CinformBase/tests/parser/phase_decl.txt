@@ -2,8 +2,8 @@ thing is a kind
 white abajour is an thing
 to carry the white abajour from (M - text) to (N - text) 
 
- 
- 
+to sort (L - list of K) in (P - phrase K to number ) order
+exit 
 
 to set the background color for (style - text ) to (N - text) 
 to decide what number is the fibonacci index of ( index - number) 
