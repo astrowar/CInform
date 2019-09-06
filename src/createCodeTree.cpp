@@ -3,13 +3,21 @@ namespace CInform
 {
 	namespace CodeTree
 	{
-		TypeNode * SourceControl::getType( string name )
+		NamedDeclaration * SourceControl::getDeclaration( string name )
 		{
-			 
+			for (auto e : name_decl)
+			{
+				if (e->name == name)
+				{
+					return e;
+				}
+			}
+			return nullptr;
 		}
 		void CodeTree::SourceControl::addClass( ClassDeclaration * cc )
 		{
-
+			main.push_back( cc );
+			name_decl.push_back(   cc  );
 		}
 
 		ClassDeclaration * CodeTree::SourceControl::getClass( std::string name )
@@ -67,6 +75,37 @@ namespace CInform
 			auto s= new  StringLiteral();
 			s->str = value;
 			return s;
+		}
+
+		VariableDeclaration * SourceControl::createVariableDeclaration( Identifier * name, TypeNode * type, Expression * initializer )
+		{
+			VariableDeclaration *v = new  VariableDeclaration();
+			v->name = name->originalKeywordKind;
+			v->initializer = initializer;
+			v->type = type;
+
+			return v;
+		}
+
+		NewExpression * SourceControl::createNew( Expression * expression, list<Expression*> argumentsArray )
+		{
+			auto n = new  NewExpression();
+			n->expr = expression;
+			n->arguments = argumentsArray;
+			return n;
+		}
+
+		VariableStatement * SourceControl::createVariableStatement( VariableDeclaration * v )
+		{
+			auto vv = new VariableStatement();
+			vv->var_decl = v;
+			return vv;
+		}
+
+		void SourceControl::addGlobalVariableDeclaration( VariableDeclaration * v )
+		{
+			name_decl.push_back( v );
+			main.push_back( createVariableStatement( v ) );
 		}
 
 		 

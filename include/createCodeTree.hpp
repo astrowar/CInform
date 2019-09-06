@@ -17,9 +17,13 @@ namespace CInform
 
 			SourceControl *parentScope;
 
-			list< TypeNode* > types;
+			list< Statement* > main;
+			list< std::pair<std::string, TypeNode* > > name_types;
+			list<  NamedDeclaration* > name_decl;
+			
 
-			TypeNode* getType( string name );
+			
+			NamedDeclaration *  getDeclaration( string name );
 			void addClass( ClassDeclaration *cc );
 
 			ClassDeclaration* getClass( std::string name );						
@@ -30,6 +34,11 @@ namespace CInform
 			PropertyDeclaration* createProperty( Identifier* name, TypeNode* type, Expression* initializer );
 			TypeReferenceNode* createTypeReferenceNode( Identifier* name );
 			StringLiteral* createStringLiteral( string value );
+
+			VariableDeclaration* createVariableDeclaration( Identifier* name, TypeNode* type, Expression* initializer );
+			NewExpression* createNew( Expression* expression, list< Expression*> argumentsArray );
+			VariableStatement* createVariableStatement( VariableDeclaration  *v );
+			void addGlobalVariableDeclaration( VariableDeclaration  *v );
 		};
 
 	}

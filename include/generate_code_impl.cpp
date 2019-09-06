@@ -104,7 +104,7 @@ namespace CInform
 
 			{
 				auto ct = pstore->codeTree;
-				auto cc = ct->getType( newKindName );
+				auto cc = ct->getDeclaration( newKindName );
 				if (cc == nullptr)
 				{					
 					auto heritage = ct->createHeritageClause( { ct->createExpressionWithTypeArguments( ct->createIdentifier( "Kind" ), nullptr ) } );
@@ -114,6 +114,7 @@ namespace CInform
 						auto pp = ct->createProperty( ct->createIdentifier( "article" ), ct->createTypeReferenceNode( ct->createIdentifier( "text" ) ), ct->createStringLiteral( article_str ) ) ;
 						ccdecl->members.push_back(  pp );
 					}
+					ct->addClass( ccdecl );
 				}
 			}
 
@@ -159,6 +160,24 @@ namespace CInform
 				}
 			}
 
+			
+			{
+				auto ct = pstore->codeTree;
+				auto cc = ct->getDeclaration( insName );
+				if (cc == nullptr)
+				{
+					auto heritage = ct->createHeritageClause( { ct->createExpressionWithTypeArguments( ct->createIdentifier( kindname ), nullptr ) } );
+					auto ccdecl = ct->createClassDeclaration( ct->createIdentifier( insName ), heritage );
+					if (article_str.empty() == false)
+					{
+						auto pp = ct->createProperty( ct->createIdentifier( "article" ), ct->createTypeReferenceNode( ct->createIdentifier( "text" ) ), ct->createStringLiteral( article_str ) );
+						ccdecl->members.push_back( pp );
+					}
+					ct->addClass( ccdecl );
+				}
+			}
+
+
 
 			if (pstore->addKind( insName, kind ))
 			{
@@ -201,12 +220,28 @@ namespace CInform
 					return  createPreCodeGenerateError( "E:Symbolo ja existe: " + insName );;
 				}
 
+				{
+					auto ct = pstore->codeTree;
+					auto cc = ct->getDeclaration( insName );
+					if (cc == nullptr)
+					{
+						auto varDec = ct->createVariableDeclaration(
+							ct->createIdentifier( insName ),
+							ct->createTypeReferenceNode( ct->createIdentifier( kind_reference.repr() ) ),
+							ct->createNew( ct->createIdentifier( kind_reference.repr() ), {} )
+						);
+						auto vst = ct->createVariableStatement( varDec );
+						ct->addGlobalVariableDeclaration( varDec );  
+					}
+				}
+
+
+
+
 				if (pstore->addInstance( insName, kind_reference ))
 				{
 					auto ins_refq = pstore->getReference( insName );
 					prev_generate_local->add( createPreCodeGenerateIL( "New", "Instance", ins_refq.repr() , kind_reference.repr()  ));
-
-
 					pstore->setLocalVar( "it", ins_refq.repr() ); //set o IT para proximas chamadas
 
 					if(ins_refq.repr()!= insName)prev_generate_local->add( createPreCodeGenerateIL( "Set", "Name", ins_refq.repr() , insName ) );
@@ -237,6 +272,14 @@ namespace CInform
 				cout << "ja existe" << endl;
 				return  createPreCodeGenerateError( "E:Symbolo ja existe: " + valuName );;
 			}
+
+			auto ct = pstore->codeTree;
+			auto cc = ct->getDeclaration( kind );
+			if (cc == nullptr)
+			{
+				ct->createEnumDeclaration( ct->createIdentifier( "PrintMedia" ), {} )
+			}
+
 			if(pstore->addInstance( valuName, kind_reference ) )
 			{
 				PreCodeGenerate*  prev_generate_local = createPreCodeGenerateEmpty();

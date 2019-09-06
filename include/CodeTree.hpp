@@ -84,8 +84,8 @@ namespace CInform
 		{
 		public:
 		 
-			TypeParameterDeclaration *type;
-			Expression initializer;
+			TypeNode *type;
+			Expression* initializer;
 		};
 
 		class ParameterVarDecl
@@ -97,7 +97,7 @@ namespace CInform
 		class VariableStatement :public Statement
 		{
 		public:
-			VariableDeclaration var_decl;
+			VariableDeclaration* var_decl;
 		};
 
 
@@ -234,10 +234,11 @@ namespace CInform
 		};
 	 
 
-		class NewExpression : public PrimaryExpression, Declaration
+		class NewExpression : public PrimaryExpression, public Declaration
 		{
-			Expression expr; //funcao chamadora ....
-			std::list<Expression>  arguments;
+		public:
+			Expression* expr; //funcao chamadora ....
+			std::list<Expression*>  arguments;
 		};
 
 		class Identifier : public PrimaryExpression, Declaration
